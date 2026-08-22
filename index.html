@@ -5,16 +5,121 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#f5e6c8" />
   <title>Hall of Presidents — Memory Palace</title>
-  <style>
-    /* Full styles and multi-profile + Drive images version - see local for complete */
-    body { font-family: system-ui; background: #f8f1e3; color: #3d2b1f; padding: 20px; text-align: center; }
-  </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <h1>Hall of Presidents</h1>
-  <p>The full multi-profile game with Google Drive illustrations is ready.</p>
-  <p>Because of size limits in the automated push, please download the latest index.html from the conversation and upload it once more via the GitHub web UI (Add file → Upload files). It already points to your public Google Drive images.</p>
-  <p>After that one upload, we can iterate freely with text-only changes.</p>
-  <p><a href="https://drive.google.com/drive/folders/1caiGR8WHs-wH-jiy3odjlniMMdB9Sg2W">Images folder</a></p>
+  <div id="toast"></div>
+
+  <!-- PROFILES -->
+  <div id="screen-profiles" class="screen">
+    <header>
+      <h1>Who is playing?</h1>
+      <div class="subtitle">Each player has their own progress</div>
+    </header>
+    <div id="profile-grid" class="profile-grid"></div>
+    <div class="btn-row" style="margin-top:20px;">
+      <button class="btn primary" onclick="showCreateProfile()">+ New player</button>
+    </div>
+  </div>
+
+  <!-- CREATE PROFILE -->
+  <div id="screen-create" class="screen">
+    <header>
+      <h1>New player</h1>
+    </header>
+    <div class="card">
+      <label style="display:block; margin-bottom:8px;">Name</label>
+      <input id="new-name" type="text" placeholder="e.g. Alex" maxlength="12"
+             style="width:100%; padding:12px; border-radius:12px; border:2px solid var(--wood); font-size:1.1rem; margin-bottom:16px;" />
+      <label style="display:block; margin-bottom:8px;">Pick an avatar</label>
+      <div id="avatar-choices" class="avatar-choices"></div>
+      <div class="btn-row" style="margin-top:20px;">
+        <button class="btn primary" onclick="createProfile()">Start playing</button>
+        <button class="btn secondary" onclick="showProfiles()">Back</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOME / HALL -->
+  <div id="screen-home" class="screen">
+    <header>
+      <h1>Hall of Presidents</h1>
+      <div class="subtitle">Memory Palace • Learn • Shine</div>
+      <div id="current-kid-badge" class="kid-badge" onclick="showProfiles()"></div>
+    </header>
+
+    <div class="mission" id="mission-text">
+      Walk the path and make the portraits shine!
+    </div>
+
+    <div class="pips" id="pips"></div>
+
+    <div class="hall" id="hall"></div>
+
+    <div class="btn-row">
+      <button class="btn primary" onclick="startLearn()">✨ Walk the Path</button>
+      <button class="btn" onclick="startPractice()">🎯 Practice</button>
+    </div>
+
+    <div class="parent-link">
+      <a href="#" onclick="showParent(); return false;">Parent / Progress</a>
+      ·
+      <a href="#" onclick="if(confirm('Reset all progress for this player?')){resetProgress(); location.reload();}">Reset</a>
+      ·
+      <a href="#" onclick="showProfiles(); return false;">Switch player</a>
+    </div>
+  </div>
+
+  <!-- LEARN CARD -->
+  <div id="screen-learn" class="screen">
+    <header>
+      <h1>Place in the Palace</h1>
+    </header>
+    <div class="card" id="learn-card"></div>
+    <div class="btn-row">
+      <button class="btn primary" id="btn-got-it">Got it! ✨</button>
+      <button class="btn secondary" onclick="showHome()">Back</button>
+    </div>
+  </div>
+
+  <!-- PRACTICE -->
+  <div id="screen-practice" class="screen">
+    <header>
+      <h1 id="practice-title">Who is next?</h1>
+    </header>
+    <div class="card" id="practice-card"></div>
+    <div class="btn-row">
+      <button class="btn secondary" onclick="showHome()">Home</button>
+    </div>
+  </div>
+
+  <!-- PARENT / STATS -->
+  <div id="screen-parent" class="screen">
+    <header>
+      <h1>Grown-up View</h1>
+      <div class="subtitle">Progress is soft for kids — numbers here only</div>
+    </header>
+    <div class="card" style="text-align:left; font-size:0.9rem;">
+      <p id="stats-text"></p>
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn" onclick="showHome()">Back to Hall</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav id="main-nav">
+    <button class="active" onclick="showHome()" id="nav-home">
+      <span class="icon">🏛️</span>Hall
+    </button>
+    <button onclick="startLearn()" id="nav-learn">
+      <span class="icon">✨</span>Learn
+    </button>
+    <button onclick="startPractice()" id="nav-practice">
+      <span class="icon">🎯</span>Practice
+    </button>
+  </nav>
+
+  <script src="app.js"></script>
 </body>
 </html>
