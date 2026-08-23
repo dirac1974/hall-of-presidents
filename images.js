@@ -47,4 +47,10 @@ const IMG_IDS = {
   46:"1KP9BRU-2OfkO2Fgr84-ES26Wk6pkVJvH",
   47:"183M2jiTkREPi6OIDW6rYlR7hFaNe65n7"
 };
-function presImg(n){ const id = IMG_IDS[n]; return id ? "https://drive.google.com/uc?export=view&id="+id : null; }
+function presImg(n, w){
+  var id = IMG_IDS[n];
+  if (!id) return null;
+  return w
+    ? "https://lh3.googleusercontent.com/d/" + id + "=w" + w
+    : "https://lh3.googleusercontent.com/d/" + id;
+}
