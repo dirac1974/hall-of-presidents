@@ -10,6 +10,26 @@ if (typeof showScreen === "function") {
     }
   };
 }
+function bumpGood(p){
+  var st = getActiveProgress()[p.n];
+  st.introduced = true;
+  st.consec = (st.consec || 0) + 1;
+  if (st.state === 0) st.state = 1;
+  if (st.state === 1 && st.consec >= 2) st.state = 2;
+  if (st.state === 2 && st.consec >= 3) st.state = 3;
+  saveStore();
+  if (typeof sessionCombo !== "undefined") sessionCombo += 1;
+  if (typeof addStars === "function") addStars(1);
+  if (typeof cueCorrect === "function") cueCorrect();
+  if (typeof renderPlayHud === "function") renderPlayHud();
+  if (typeof checkParades === "function") checkParades();
+}
+function bumpMiss(p){
+  getActiveProgress()[p.n].consec = 0;
+  saveStore();
+  if (typeof sessionCombo !== "undefined") sessionCombo = 0;
+  if (typeof renderPlayHud === "function") renderPlayHud();
+}
 function firstUnlit(){
   var prog = getActiveProgress();
   for (var i=0;i<PRESIDENTS.length;i++){
@@ -19,8 +39,8 @@ function firstUnlit(){
   return PRESIDENTS[0];
 }
 function startWalk(){
-  var pool = PRESIDENTS.filter(function(p){ return getActiveProgress()[p.n].introduced; });
-  if (pool.length < 1) { startLearn(); return; }
+  var any = PRESIDENTS.some(function(p){ return getActiveProgress()[p.n].introduced; });
+  if (!any) { startLearn(); return; }
   walkRoom = firstUnlit().n;
   walkRun = 0;
   renderWalk();
@@ -28,25 +48,21 @@ function startWalk(){
 function renderWalk(){
   var p = PRESIDENTS[walkRoom-1];
   if (!p) { toast("You walked the whole palace!", "success"); if (typeof burst==="function") burst(); showHome(); return; }
-  var prog = getActiveProgress();
-  if (!prog[p.n].introduced) {
+  if (!getActiveProgress()[p.n].introduced) {
     toast("A new door. Place this portrait first.", "warm");
     showLearnCard(p);
     return;
   }
   document.getElementById("walk-title").textContent = "Room #"+p.n;
   var src = presImg(p.n, 500);
-  var card = document.getElementById("walk-card");
-  card.innerHTML =
+  document.getElementById("walk-card").innerHTML =
     '<div class="door" id="the-door"><div class="door-num">#'+p.n+'</div>' +
     '<div class="door-face">'+(src?'<img id="door-art" src="'+src+'" alt="">':'<div style="font-size:3rem">'+p.emoji+'</div>')+'</div>' +
     '<div class="door-knob"></div></div>' +
-    '<p class="walk-prompt">Who lives behind this door?</p>' +
-    '<div class="options" id="walk-opts"></div>';
+    '<p class="walk-prompt">Who lives behind this door?</p><div class="options" id="walk-opts"></div>';
   generateOptions(p).forEach(function(opt){
     var b = document.createElement("div");
-    b.className = "opt";
-    b.textContent = opt.label;
+    b.className = "opt"; b.textContent = opt.label;
     b.onclick = function(){ answerWalk(opt.correct, b, p); };
     document.getElementById("walk-opts").appendChild(b);
   });
@@ -57,48 +73,43 @@ function answerWalk(ok, btn, p){
   if (ok) {
     btn.classList.add("correct");
     document.getElementById("the-door").classList.add("open");
-    if (typeof recordCorrect==="function") recordCorrect(p);
+    bumpGood(p);
     walkRun += 1;
     toast("#"+p.n+" "+p.short+" — the path continues", "success");
     setTimeout(function(){
-      if (walkRun >= 6) { toast("Great walk! Rest in the Hall.", "success"); showHome(); }
+      if (walkRun >= 6) { toast("Great walk! Back to the Hall.", "success"); showHome(); }
       else { walkRoom += 1; renderWalk(); }
-    }, 1100);
+    }, 1050);
   } else {
     btn.classList.add("wrong");
-    if (typeof recordMiss==="function") recordMiss(p);
+    bumpMiss(p);
     toast("Picture it: "+p.mnemonic, "warm");
-    setTimeout(function(){ showLearnCard(p); }, 1200);
+    setTimeout(function(){ showLearnCard(p); }, 1100);
   }
 }
 function startLineUp(){
   var intro = PRESIDENTS.filter(function(p){ return getActiveProgress()[p.n].introduced; });
   if (intro.length < 4) { toast("Place 4 portraits first, then line them up!", "warm"); startLearn(); return; }
-  var maxStart = intro.length - 4;
-  var startAt = Math.min(firstUnlit().n-1, maxStart);
-  if (startAt < 0) startAt = 0;
+  var startAt = Math.max(0, Math.min(firstUnlit().n-1, intro.length-4));
   lineTarget = PRESIDENTS.slice(startAt, startAt+4);
   linePicked = [];
+  var pool = document.getElementById("line-pool");
+  pool.innerHTML = ""; pool.dataset.built = "";
   renderLine();
 }
 function renderLine(){
-  document.getElementById("line-title").textContent = "Line them up: #"+lineTarget[0].n+"–#"+lineTarget[3].n;
+  document.getElementById("line-title").textContent = "Line them up · #"+lineTarget[0].n+"–#"+lineTarget[3].n;
   var slots = document.getElementById("line-slots");
   slots.innerHTML = "";
   linePicked.forEach(function(p){
-    var c = document.createElement("div");
-    c.className = "chip";
-    c.textContent = "#"+p.n+" "+p.short;
-    slots.appendChild(c);
+    var c = document.createElement("div"); c.className = "chip"; c.textContent = "#"+p.n+" "+p.short; slots.appendChild(c);
   });
   var pool = document.getElementById("line-pool");
   if (!pool.dataset.built) {
-    pool.innerHTML = "";
-    var shuffle = lineTarget.slice().sort(function(){ return Math.random()-0.5; });
-    shuffle.forEach(function(p){
+    var mix = lineTarget.slice().sort(function(){ return Math.random()-0.5; });
+    mix.forEach(function(p){
       var d = document.createElement("div");
-      d.className = "line-card";
-      d.dataset.n = p.n;
+      d.className = "line-card"; d.dataset.n = p.n;
       var src = presImg(p.n, 240);
       d.innerHTML = (src?'<img src="'+src+'" alt="">':'<div style="font-size:2rem">'+p.emoji+'</div>')+p.short;
       d.onclick = function(){ pickLine(p, d); };
@@ -113,19 +124,17 @@ function pickLine(p, el){
   if (p.n !== need.n) {
     el.classList.add("bad");
     setTimeout(function(){ el.classList.remove("bad"); }, 360);
+    bumpMiss(need);
     toast("Next is #"+need.n+". Picture "+need.mnemonic, "warm");
-    if (typeof recordMiss==="function") recordMiss(need);
     return;
   }
   el.className = "line-card used";
   linePicked.push(p);
-  if (typeof recordCorrect==="function") recordCorrect(p);
+  bumpGood(p);
   if (linePicked.length === 4) {
     document.getElementById("line-pool").dataset.built = "";
     toast("Perfect order! The hallway is clear.", "success");
     if (typeof burst==="function") burst();
-    setTimeout(showHome, 1200);
-  } else {
-    renderLine();
-  }
+    setTimeout(showHome, 1100);
+  } else renderLine();
 }
