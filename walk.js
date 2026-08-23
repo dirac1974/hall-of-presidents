@@ -54,12 +54,12 @@ function renderWalk(){
     return;
   }
   document.getElementById("walk-title").textContent = "Room #"+p.n;
-  var src = presImg(p.n, 500);
+  var pic = imgTag(p.n, 500, "width:100%;height:150px;object-fit:cover;display:block;");
   document.getElementById("walk-card").innerHTML =
     '<div class="door" id="the-door"><div class="door-num">#'+p.n+'</div>' +
-    '<div class="door-face">'+(src?'<img id="door-art" src="'+src+'" alt="">':'<div style="font-size:3rem">'+p.emoji+'</div>')+'</div>' +
+    '<div class="door-face">'+(pic || '<div style="font-size:3rem">'+p.emoji+'</div>')+'</div>' +
     '<div class="door-knob"></div></div>' +
-    '<p class="walk-prompt">Who lives behind this door?</p><div class="options" id="walk-opts"></div>';
+    '<p class="walk-prompt">Who lives in this picture?</p><div class="options" id="walk-opts"></div>';
   generateOptions(p).forEach(function(opt){
     var b = document.createElement("div");
     b.className = "opt"; b.textContent = opt.label;
@@ -110,8 +110,7 @@ function renderLine(){
     mix.forEach(function(p){
       var d = document.createElement("div");
       d.className = "line-card"; d.dataset.n = p.n;
-      var src = presImg(p.n, 240);
-      d.innerHTML = (src?'<img src="'+src+'" alt="">':'<div style="font-size:2rem">'+p.emoji+'</div>')+p.short;
+      d.innerHTML = (imgTag(p.n, 220, "width:100%;height:78px;object-fit:cover;border-radius:8px;display:block;margin-bottom:4px;") || '<div style="font-size:2rem">'+p.emoji+'</div>') + p.short;
       d.onclick = function(){ pickLine(p, d); };
       pool.appendChild(d);
     });
