@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="play.css" />
   <link rel="stylesheet" href="parade.css" />
+  <link rel="stylesheet" href="walk.css" />
 </head>
 <body>
   <div id="toast"></div>
@@ -49,31 +50,29 @@
   <div id="screen-home" class="screen">
     <header>
       <h1>Hall of Presidents</h1>
-      <div class="subtitle">Walk the palace • Unlock wings • Shine</div>
+      <div class="subtitle">Walk rooms • Line them up • Shine</div>
       <div id="current-kid-badge" class="kid-badge" onclick="showProfiles()"></div>
     </header>
     <div class="play-hud">
       <div class="hud-chip">⭐ <span id="star-count">0</span></div>
       <div class="hud-chip" id="combo-chip">🔥 <span id="combo-count">0</span></div>
-      <div class="hud-chip sound" id="sound-chip" onclick="toggleSound()" title="Sound on/off">🔊</div>
+      <div class="hud-chip sound" id="sound-chip" onclick="toggleSound()">🔊</div>
     </div>
-    <div class="mission" id="mission-text">Walk the path and make the portraits shine!</div>
+    <div class="mission" id="mission-text">Walk the palace door by door — that is the game.</div>
     <div id="daily-quest" class="daily-quest"></div>
     <div class="pips" id="pips"></div>
     <div id="era-row" class="era-row"></div>
     <div class="hall" id="hall"></div>
     <div class="btn-row">
-      <button class="btn primary" onclick="startLearn()">✨ Walk the Path</button>
-      <button class="btn" onclick="startPractice()">🎯 Practice</button>
+      <button class="btn primary" onclick="startWalk()">🚪 Palace Walk</button>
+      <button class="btn" onclick="startLineUp()">📜 Line them up</button>
+      <button class="btn secondary" onclick="startLearn()">✨ Place a portrait</button>
     </div>
     <div class="parent-link">
       <a href="#" onclick="showParent(); return false;">Parent / Progress</a>
-      ·
-      <a href="#" onclick="previewParade(); return false;">Preview parade</a>
-      ·
-      <a href="#" onclick="if(confirm('Reset all progress for this player?')){resetProgress(); location.reload();}">Reset</a>
-      ·
-      <a href="#" onclick="showProfiles(); return false;">Switch player</a>
+      · <a href="#" onclick="previewParade(); return false;">Preview parade</a>
+      · <a href="#" onclick="if(confirm('Reset all progress for this player?')){resetProgress(); location.reload();}">Reset</a>
+      · <a href="#" onclick="showProfiles(); return false;">Switch player</a>
     </div>
   </div>
 
@@ -94,10 +93,25 @@
     </div>
   </div>
 
+  <div id="screen-walk" class="screen">
+    <header><h1 id="walk-title">Palace Walk</h1><div class="subtitle">Open the next door in order</div></header>
+    <div class="card" id="walk-card"></div>
+    <div class="btn-row"><button class="btn secondary" onclick="showHome()">Hall</button></div>
+  </div>
+
+  <div id="screen-line" class="screen">
+    <header><h1 id="line-title">Line them up</h1><div class="subtitle">Tap the four in order</div></header>
+    <div class="card">
+      <div class="line-slot" id="line-slots"></div>
+      <div class="line-pool" id="line-pool"></div>
+    </div>
+    <div class="btn-row"><button class="btn secondary" onclick="showHome()">Hall</button></div>
+  </div>
+
   <div id="screen-parent" class="screen">
     <header>
       <h1>Grown-up View</h1>
-      <div class="subtitle">Kids see stars and glow — numbers stay here</div>
+      <div class="subtitle">Why Walk and Line-Up beat quiz grind</div>
     </header>
     <div class="card" style="text-align:left; font-size:0.9rem;">
       <p id="stats-text"></p>
@@ -110,8 +124,8 @@
 
   <nav id="main-nav">
     <button class="active" onclick="showHome()" id="nav-home"><span class="icon">🏛️</span>Hall</button>
-    <button onclick="startLearn()" id="nav-learn"><span class="icon">✨</span>Learn</button>
-    <button onclick="startPractice()" id="nav-practice"><span class="icon">🎯</span>Practice</button>
+    <button onclick="startWalk()" id="nav-learn"><span class="icon">🚪</span>Walk</button>
+    <button onclick="startLineUp()" id="nav-practice"><span class="icon">📜</span>Line up</button>
   </nav>
 
   <script src="images.js"></script>
@@ -121,6 +135,7 @@
   <script src="app.js"></script>
   <script src="play.js"></script>
   <script src="parade.js"></script>
+  <script src="walk.js"></script>
   <script>
     if (typeof renderPlayHud==="function") renderPlayHud();
     if (typeof renderSoundChip==="function") renderSoundChip();
