@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#f5e6c8" />
   <title>Hall of Presidents — Memory Palace</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="play.css" />
 </head>
 <body>
   <div id="toast"></div>
@@ -13,7 +14,7 @@
   <div id="screen-profiles" class="screen">
     <header>
       <h1>Who is playing?</h1>
-      <div class="subtitle">Each player has their own progress</div>
+      <div class="subtitle">Each player has their own Hall and stars</div>
     </header>
     <div id="profile-grid" class="profile-grid"></div>
     <div class="btn-row" style="margin-top:20px;">
@@ -22,9 +23,7 @@
   </div>
 
   <div id="screen-create" class="screen">
-    <header>
-      <h1>New player</h1>
-    </header>
+    <header><h1>New player</h1></header>
     <div class="card">
       <label style="display:block; margin-bottom:8px;">Name</label>
       <input id="new-name" type="text" placeholder="e.g. Alex" maxlength="12"
@@ -41,11 +40,17 @@
   <div id="screen-home" class="screen">
     <header>
       <h1>Hall of Presidents</h1>
-      <div class="subtitle">Memory Palace • Learn • Shine</div>
+      <div class="subtitle">Walk the palace • Unlock wings • Shine</div>
       <div id="current-kid-badge" class="kid-badge" onclick="showProfiles()"></div>
     </header>
+    <div class="play-hud">
+      <div class="hud-chip">⭐ <span id="star-count">0</span></div>
+      <div class="hud-chip" id="combo-chip">🔥 <span id="combo-count">0</span></div>
+    </div>
     <div class="mission" id="mission-text">Walk the path and make the portraits shine!</div>
+    <div id="daily-quest" class="daily-quest"></div>
     <div class="pips" id="pips"></div>
+    <div id="era-row" class="era-row"></div>
     <div class="hall" id="hall"></div>
     <div class="btn-row">
       <button class="btn primary" onclick="startLearn()">✨ Walk the Path</button>
@@ -80,7 +85,7 @@
   <div id="screen-parent" class="screen">
     <header>
       <h1>Grown-up View</h1>
-      <div class="subtitle">Progress is soft for kids — numbers here only</div>
+      <div class="subtitle">Kids see stars and glow — numbers stay here</div>
     </header>
     <div class="card" style="text-align:left; font-size:0.9rem;">
       <p id="stats-text"></p>
@@ -101,5 +106,7 @@
   <script src="app-core.js"></script>
   <script src="hall-thumbs.js"></script>
   <script src="app.js"></script>
+  <script src="play.js"></script>
+  <script>if (typeof renderPlayHud==="function") renderPlayHud();</script>
 </body>
 </html>
