@@ -7,9 +7,18 @@
   <title>Hall of Presidents — Memory Palace</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="play.css" />
+  <link rel="stylesheet" href="parade.css" />
 </head>
 <body>
   <div id="toast"></div>
+  <div id="parade">
+    <div class="parade-banner">
+      <h2 id="parade-title">Parade!</h2>
+      <p id="parade-sub"></p>
+    </div>
+    <div class="parade-track"><div class="parade-line" id="parade-line"></div></div>
+    <button class="parade-skip" onclick="endParade()">Continue ✨</button>
+  </div>
 
   <div id="screen-profiles" class="screen">
     <header>
@@ -46,6 +55,7 @@
     <div class="play-hud">
       <div class="hud-chip">⭐ <span id="star-count">0</span></div>
       <div class="hud-chip" id="combo-chip">🔥 <span id="combo-count">0</span></div>
+      <div class="hud-chip sound" id="sound-chip" onclick="toggleSound()" title="Sound on/off">🔊</div>
     </div>
     <div class="mission" id="mission-text">Walk the path and make the portraits shine!</div>
     <div id="daily-quest" class="daily-quest"></div>
@@ -58,6 +68,8 @@
     </div>
     <div class="parent-link">
       <a href="#" onclick="showParent(); return false;">Parent / Progress</a>
+      ·
+      <a href="#" onclick="previewParade(); return false;">Preview parade</a>
       ·
       <a href="#" onclick="if(confirm('Reset all progress for this player?')){resetProgress(); location.reload();}">Reset</a>
       ·
@@ -90,6 +102,7 @@
     <div class="card" style="text-align:left; font-size:0.9rem;">
       <p id="stats-text"></p>
       <div class="btn-row" style="margin-top:16px;">
+        <button class="btn" onclick="previewParade()">Preview parade</button>
         <button class="btn" onclick="showHome()">Back to Hall</button>
       </div>
     </div>
@@ -107,6 +120,18 @@
   <script src="hall-thumbs.js"></script>
   <script src="app.js"></script>
   <script src="play.js"></script>
-  <script>if (typeof renderPlayHud==="function") renderPlayHud();</script>
+  <script src="parade.js"></script>
+  <script>
+    if (typeof renderPlayHud==="function") renderPlayHud();
+    if (typeof renderSoundChip==="function") renderSoundChip();
+    function previewParade(){
+      var e = ERAS[0], shine = false;
+      for (var i=0;i<ERAS.length;i++){
+        if (eraReady(ERAS[i],3)) { e = ERAS[i]; shine = true; break; }
+        if (eraReady(ERAS[i],2)) { e = ERAS[i]; }
+      }
+      startParade(e, shine);
+    }
+  </script>
 </body>
 </html>
