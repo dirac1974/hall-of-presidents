@@ -24,19 +24,28 @@
   <div id="screen-profiles" class="screen">
     <header>
       <h1>Who is playing?</h1>
-      <div class="subtitle">Each player has their own Hall and stars</div>
+      <div class="subtitle">Names and progress save across devices</div>
     </header>
     <div id="profile-grid" class="profile-grid"></div>
-    <div class="btn-row" style="margin-top:20px;">
-      <button class="btn primary" onclick="showCreateProfile()">+ New player</button>
+    <div class="card" style="margin-top:12px;">
+      <label style="display:block;margin-bottom:6px;">Find my Hall on another device</label>
+      <input id="find-user" type="text" placeholder="type the player name" maxlength="18"
+             style="width:100%;padding:12px;border-radius:12px;border:2px solid var(--wood);font-size:1.05rem;" />
+      <div class="btn-row" style="margin-top:12px;">
+        <button class="btn" onclick="findHall()">Find my Hall</button>
+        <button class="btn primary" onclick="showCreateProfile()">+ New player</button>
+      </div>
     </div>
   </div>
 
   <div id="screen-create" class="screen">
     <header><h1>New player</h1></header>
     <div class="card">
-      <label style="display:block; margin-bottom:8px;">Name</label>
+      <label style="display:block; margin-bottom:8px;">Name (this is the username)</label>
       <input id="new-name" type="text" placeholder="e.g. Alex" maxlength="12"
+             style="width:100%; padding:12px; border-radius:12px; border:2px solid var(--wood); font-size:1.1rem; margin-bottom:16px;" />
+      <label style="display:block; margin-bottom:8px;">Optional family PIN</label>
+      <input id="new-pin" type="password" inputmode="numeric" placeholder="4 digits, optional" maxlength="6"
              style="width:100%; padding:12px; border-radius:12px; border:2px solid var(--wood); font-size:1.1rem; margin-bottom:16px;" />
       <label style="display:block; margin-bottom:8px;">Pick an avatar</label>
       <div id="avatar-choices" class="avatar-choices"></div>
@@ -111,11 +120,12 @@
   <div id="screen-parent" class="screen">
     <header>
       <h1>Grown-up View</h1>
-      <div class="subtitle">Why Walk and Line-Up beat quiz grind</div>
+      <div class="subtitle">Cloud save is on — same name works on any device</div>
     </header>
     <div class="card" style="text-align:left; font-size:0.9rem;">
       <p id="stats-text"></p>
       <div class="btn-row" style="margin-top:16px;">
+        <button class="btn" onclick="cloudSaveActive(); toast('Saved to the cloud','success');">Save now</button>
         <button class="btn" onclick="previewParade()">Preview parade</button>
         <button class="btn" onclick="showHome()">Back to Hall</button>
       </div>
@@ -136,6 +146,7 @@
   <script src="play.js"></script>
   <script src="parade.js"></script>
   <script src="walk.js"></script>
+  <script src="sync.js"></script>
   <script>
     if (typeof renderPlayHud==="function") renderPlayHud();
     if (typeof renderSoundChip==="function") renderSoundChip();
