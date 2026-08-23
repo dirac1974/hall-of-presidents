@@ -1,9 +1,9 @@
 .door{width:min(280px,80vw);margin:8px auto;background:linear-gradient(180deg,#8b5e3c,#5c3a1e);border-radius:12px 12px 6px 6px;padding:10px;box-shadow:0 10px 0 #3d2412;transition:transform .45s ease;}
-.door.open{transform:rotateY(-18deg) scale(1.02);background:linear-gradient(180deg,#c9a26b,#8b5e3c);}
-.door-num{color:#ffe6a6;font-size:2.4rem;font-weight:900;text-align:center;}
+.door.open{transform:rotateY(-12deg) scale(1.03);background:linear-gradient(180deg,#c9a26b,#8b5e3c);}
+.door-num{color:#ffe6a6;font-size:2.2rem;font-weight:900;text-align:center;}
 .door-face{background:#2a1810;border-radius:8px;min-height:150px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
-.door-face img{width:100%;height:150px;object-fit:cover;display:none;}
-.door.open .door-face img{display:block;}
+.door-face img{width:100%;height:150px;object-fit:cover;display:block;filter:saturate(.85);}
+.door.open .door-face img{filter:none;}
 .door-knob{width:18px;height:18px;background:#ffd700;border-radius:50%;margin:8px 14px 2px auto;}
 .walk-prompt{font-size:1.05rem;font-weight:700;margin:8px 0;}
 .line-slot{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;min-height:52px;margin:8px 0;}
