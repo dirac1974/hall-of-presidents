@@ -1,0 +1,14 @@
+#parade{position:fixed;inset:0;z-index:220;display:none;align-items:center;justify-content:center;flex-direction:column;background:rgba(40,24,12,.62);backdrop-filter:blur(3px);}
+#parade.show{display:flex;}
+.parade-banner{background:linear-gradient(180deg,#fff6d6,#ffd56a);border:4px solid #8b5e3c;border-radius:22px;padding:14px 22px;text-align:center;box-shadow:0 8px 0 #5c3a1e;max-width:90%;z-index:2;}
+.parade-banner h2{color:#5c3a1e;font-size:1.45rem;margin:0 0 4px;}
+.parade-banner p{color:#7a5430;margin:0;font-weight:700;}
+.parade-track{position:absolute;left:0;right:0;bottom:16%;height:150px;overflow:hidden;}
+.parade-line{display:flex;gap:14px;width:max-content;animation:march 9s linear forwards;padding:0 40px;}
+.float{width:108px;background:#fff8ee;border:3px solid #ffd700;border-radius:14px;text-align:center;padding:6px;box-shadow:0 6px 0 #8b5e3c;}
+.float img{width:100%;height:72px;object-fit:cover;border-radius:8px;display:block;}
+.float .fn{font-size:.68rem;font-weight:800;margin-top:4px;color:#5c3a1e;}
+.float .fnum{font-size:.72rem;font-weight:900;color:#8b5e3c;}
+@keyframes march{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
+.parade-skip{margin-top:18px;z-index:3;background:#fff8ee;border:0;border-radius:14px;padding:10px 16px;font-weight:800;color:#5c3a1e;box-shadow:0 4px 0 #8b5e3c;}
+.hud-chip.sound{cursor:pointer;}
