@@ -10,7 +10,6 @@
 <body>
   <div id="toast"></div>
 
-  <!-- PROFILES -->
   <div id="screen-profiles" class="screen">
     <header>
       <h1>Who is playing?</h1>
@@ -22,7 +21,6 @@
     </div>
   </div>
 
-  <!-- CREATE PROFILE -->
   <div id="screen-create" class="screen">
     <header>
       <h1>New player</h1>
@@ -40,27 +38,19 @@
     </div>
   </div>
 
-  <!-- HOME / HALL -->
   <div id="screen-home" class="screen">
     <header>
       <h1>Hall of Presidents</h1>
       <div class="subtitle">Memory Palace • Learn • Shine</div>
       <div id="current-kid-badge" class="kid-badge" onclick="showProfiles()"></div>
     </header>
-
-    <div class="mission" id="mission-text">
-      Walk the path and make the portraits shine!
-    </div>
-
+    <div class="mission" id="mission-text">Walk the path and make the portraits shine!</div>
     <div class="pips" id="pips"></div>
-
     <div class="hall" id="hall"></div>
-
     <div class="btn-row">
       <button class="btn primary" onclick="startLearn()">✨ Walk the Path</button>
       <button class="btn" onclick="startPractice()">🎯 Practice</button>
     </div>
-
     <div class="parent-link">
       <a href="#" onclick="showParent(); return false;">Parent / Progress</a>
       ·
@@ -70,11 +60,8 @@
     </div>
   </div>
 
-  <!-- LEARN CARD -->
   <div id="screen-learn" class="screen">
-    <header>
-      <h1>Place in the Palace</h1>
-    </header>
+    <header><h1>Place in the Palace</h1></header>
     <div class="card" id="learn-card"></div>
     <div class="btn-row">
       <button class="btn primary" id="btn-got-it">Got it! ✨</button>
@@ -82,18 +69,14 @@
     </div>
   </div>
 
-  <!-- PRACTICE -->
   <div id="screen-practice" class="screen">
-    <header>
-      <h1 id="practice-title">Who is next?</h1>
-    </header>
+    <header><h1 id="practice-title">Who is next?</h1></header>
     <div class="card" id="practice-card"></div>
     <div class="btn-row">
       <button class="btn secondary" onclick="showHome()">Home</button>
     </div>
   </div>
 
-  <!-- PARENT / STATS -->
   <div id="screen-parent" class="screen">
     <header>
       <h1>Grown-up View</h1>
@@ -107,19 +90,14 @@
     </div>
   </div>
 
-  <!-- Bottom Nav -->
   <nav id="main-nav">
-    <button class="active" onclick="showHome()" id="nav-home">
-      <span class="icon">🏛️</span>Hall
-    </button>
-    <button onclick="startLearn()" id="nav-learn">
-      <span class="icon">✨</span>Learn
-    </button>
-    <button onclick="startPractice()" id="nav-practice">
-      <span class="icon">🎯</span>Practice
-    </button>
+    <button class="active" onclick="showHome()" id="nav-home"><span class="icon">🏛️</span>Hall</button>
+    <button onclick="startLearn()" id="nav-learn"><span class="icon">✨</span>Learn</button>
+    <button onclick="startPractice()" id="nav-practice"><span class="icon">🎯</span>Practice</button>
   </nav>
 
+  <script src="images.js"></script>
+  <script src="presidents.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
