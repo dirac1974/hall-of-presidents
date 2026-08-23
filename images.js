@@ -50,7 +50,28 @@ const IMG_IDS = {
 function presImg(n, w){
   var id = IMG_IDS[n];
   if (!id) return null;
-  return w
-    ? "https://lh3.googleusercontent.com/d/" + id + "=w" + w
-    : "https://lh3.googleusercontent.com/d/" + id;
+  var sz = w || 600;
+  return "https://lh3.googleusercontent.com/d/" + id + "=s" + sz;
+}
+function presImgAlt(n, w){
+  var id = IMG_IDS[n];
+  if (!id) return null;
+  return "https://drive.google.com/thumbnail?id=" + id + "&sz=w" + (w || 600);
+}
+function imgFail(el){
+  if (!el.dataset.tried) {
+    el.dataset.tried = "1";
+    var n = el.dataset.n;
+    var alt = n && presImgAlt(Number(n), Number(el.dataset.w||600));
+    if (alt) { el.src = alt; return; }
+  }
+  el.style.display = "none";
+  var em = el.nextElementSibling;
+  if (em && em.classList && em.classList.contains("emoji")) em.style.display = "block";
+}
+function imgTag(n, w, style){
+  var src = presImg(n, w);
+  if (!src) return "";
+  var st = style || "width:100%;max-width:280px;border-radius:14px;margin:10px auto;display:block;";
+  return '<img alt="" data-n="'+n+'" data-w="'+(w||600)+'" referrerpolicy="no-referrer" loading="lazy" src="'+src+'" onerror="imgFail(this)" style="'+st+'">';
 }
