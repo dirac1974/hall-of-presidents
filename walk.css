@@ -1,0 +1,16 @@
+.door{width:min(280px,80vw);margin:8px auto;background:linear-gradient(180deg,#8b5e3c,#5c3a1e);border-radius:12px 12px 6px 6px;padding:10px;box-shadow:0 10px 0 #3d2412;transition:transform .45s ease;}
+.door.open{transform:rotateY(-18deg) scale(1.02);background:linear-gradient(180deg,#c9a26b,#8b5e3c);}
+.door-num{color:#ffe6a6;font-size:2.4rem;font-weight:900;text-align:center;}
+.door-face{background:#2a1810;border-radius:8px;min-height:150px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.door-face img{width:100%;height:150px;object-fit:cover;display:none;}
+.door.open .door-face img{display:block;}
+.door-knob{width:18px;height:18px;background:#ffd700;border-radius:50%;margin:8px 14px 2px auto;}
+.walk-prompt{font-size:1.05rem;font-weight:700;margin:8px 0;}
+.line-slot{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;min-height:52px;margin:8px 0;}
+.line-slot .chip{background:#d4f0c8;border:2px solid #5aab84;border-radius:10px;padding:6px 8px;font-weight:800;font-size:.8rem;}
+.line-pool{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.line-card{background:#fff;border:3px solid var(--wood);border-radius:14px;padding:8px;cursor:pointer;text-align:center;font-weight:700;}
+.line-card img{width:100%;height:78px;object-fit:cover;border-radius:8px;display:block;margin-bottom:4px;}
+.line-card.used{opacity:.35;pointer-events:none;}
+.line-card.bad{animation:shake .35s;border-color:#e8a07c;}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
