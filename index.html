@@ -37,6 +37,9 @@
         <button class="btn primary" onclick="showCreateProfile()">+ New player</button>
       </div>
     </div>
+    <div class="parent-link" style="margin-top:16px;">
+      <a href="#" onclick="showRecover(); return false;">Parent: recover household</a>
+    </div>
   </div>
 
   <div id="screen-create" class="screen">
@@ -45,7 +48,7 @@
       <label style="display:block; margin-bottom:8px;">Name (this is the username)</label>
       <input id="new-name" type="text" placeholder="e.g. Alex" maxlength="12"
              style="width:100%; padding:12px; border-radius:12px; border:2px solid var(--wood); font-size:1.1rem; margin-bottom:16px;" />
-      <label style="display:block; margin-bottom:8px;">Optional family PIN</label>
+      <label style="display:block; margin-bottom:8px;">Optional player PIN</label>
       <input id="new-pin" type="password" inputmode="numeric" placeholder="4 digits, optional" maxlength="6"
              style="width:100%; padding:12px; border-radius:12px; border:2px solid var(--wood); font-size:1.1rem; margin-bottom:16px;" />
       <label style="display:block; margin-bottom:8px;">Pick an avatar</label>
@@ -121,14 +124,57 @@
   <div id="screen-parent" class="screen">
     <header>
       <h1>Grown-up View</h1>
-      <div class="subtitle">Cloud save is on — same name works on any device</div>
+      <div class="subtitle">Keep the family code off the kid screens</div>
     </header>
     <div class="card" style="text-align:left; font-size:0.9rem;">
       <p id="stats-text"></p>
+      <hr style="border:none;border-top:1px solid #e6d3b0;margin:16px 0;" />
+      <p><strong>Family code</strong> (parents only)</p>
+      <p id="family-code-value" style="font-size:1.4rem;letter-spacing:0.08em;font-weight:800;margin:6px 0 12px;">—</p>
+      <label style="display:block;margin-bottom:6px;">Parent email (optional backup)</label>
+      <input id="parent-email" type="email" placeholder="you@example.com"
+             style="width:100%;padding:12px;border-radius:12px;border:2px solid var(--wood);font-size:1rem;" />
+      <div class="btn-row" style="margin-top:12px;">
+        <button class="btn" onclick="saveParentEmail()">Save email</button>
+        <button class="btn" onclick="emailCodeToMyself()">Email this code to me</button>
+      </div>
+      <p style="margin-top:12px;opacity:.8;">Best backup: email the code to yourself. Forgot-the-code uses a one-time inbox code on the recover screen.</p>
       <div class="btn-row" style="margin-top:16px;">
         <button class="btn" onclick="cloudSaveActive(); toast('Saved to the cloud','success');">Save now</button>
         <button class="btn" onclick="previewParade()">Preview parade</button>
         <button class="btn" onclick="showHome()">Back to Hall</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen-recover" class="screen">
+    <header>
+      <h1>Parent recovery</h1>
+      <div class="subtitle">Restore every kid Hall on this device</div>
+    </header>
+    <div class="card" style="text-align:left;">
+      <p><strong>I have the family code</strong></p>
+      <input id="restore-code" type="text" placeholder="MAPLE-K7Q2" maxlength="16"
+             style="width:100%;padding:12px;border-radius:12px;border:2px solid var(--wood);font-size:1.1rem;text-transform:uppercase;" />
+      <div class="btn-row" style="margin-top:12px;">
+        <button class="btn primary" onclick="restoreFamily()">Restore household</button>
+      </div>
+      <hr style="border:none;border-top:1px solid #e6d3b0;margin:18px 0;" />
+      <p><strong>I forgot the code — email me</strong></p>
+      <input id="recover-email" type="email" placeholder="the parent email on file"
+             style="width:100%;padding:12px;border-radius:12px;border:2px solid var(--wood);font-size:1rem;" />
+      <div class="btn-row" style="margin-top:12px;">
+        <button class="btn" onclick="sendEmailOtp()">Send one-time code</button>
+      </div>
+      <div id="otp-row" style="display:none;margin-top:12px;">
+        <input id="recover-otp" type="text" inputmode="numeric" placeholder="6-digit code from email" maxlength="8"
+               style="width:100%;padding:12px;border-radius:12px;border:2px solid var(--wood);font-size:1.1rem;" />
+        <div class="btn-row" style="margin-top:12px;">
+          <button class="btn primary" onclick="verifyEmailOtp()">Unlock household</button>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn secondary" onclick="showProfiles()">Back</button>
       </div>
     </div>
   </div>
@@ -149,6 +195,7 @@
   <script src="parade.js"></script>
   <script src="walk.js"></script>
   <script src="sync.js"></script>
+  <script src="family.js"></script>
   <script>
     if (typeof renderPlayHud==="function") renderPlayHud();
     if (typeof renderSoundChip==="function") renderSoundChip();
