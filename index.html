@@ -10,6 +10,14 @@
   <link rel="stylesheet" href="play.css" />
   <link rel="stylesheet" href="parade.css" />
   <link rel="stylesheet" href="walk.css" />
+  <style>
+    .next-card{background:#fff8e0;border:3px solid var(--wood-dark);border-radius:18px;padding:14px 14px 16px;margin:10px auto;max-width:420px;text-align:center;box-shadow:0 5px 0 var(--wood-dark)}
+    .next-card .kicker{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8b5e3c;margin-bottom:6px}
+    .next-card p{font-size:.95rem;margin:0 0 12px;line-height:1.35}
+    .next-card .btn{width:100%;min-width:0}
+    .how ol{text-align:left;margin:8px auto 0;padding-left:22px;line-height:1.45}
+    .how li{margin:8px 0}
+  </style>
 </head>
 <body>
   <div id="toast"></div>
@@ -63,7 +71,7 @@
   <div id="screen-home" class="screen">
     <header>
       <h1>Hall of Presidents</h1>
-      <div class="subtitle">Walk rooms • Line them up • Shine</div>
+      <div class="subtitle">Number · picture · next door</div>
       <div id="current-kid-badge" class="kid-badge" onclick="showProfiles()"></div>
     </header>
     <div class="play-hud">
@@ -71,21 +79,46 @@
       <div class="hud-chip" id="combo-chip">🔥 <span id="combo-count">0</span></div>
       <div class="hud-chip sound" id="sound-chip" onclick="toggleSound()">🔊</div>
     </div>
-    <div class="mission" id="mission-text">Walk the palace door by door — that is the game.</div>
+    <div class="next-card" id="next-card">
+      <div class="kicker">Do this next</div>
+      <p id="next-why">Look at the picture, say the number, then walk the next door.</p>
+      <button class="btn primary" id="next-btn" onclick="startLearn()">Do this next</button>
+    </div>
     <div id="daily-quest" class="daily-quest"></div>
     <div class="pips" id="pips"></div>
     <div id="era-row" class="era-row"></div>
     <div class="hall" id="hall"></div>
     <div class="btn-row">
-      <button class="btn primary" onclick="startWalk()">🚪 Palace Walk</button>
-      <button class="btn" onclick="startLineUp()">📜 Line them up</button>
-      <button class="btn secondary" onclick="startLearn()">✨ Place a portrait</button>
+      <button class="btn secondary" onclick="startWalk()">🚪 Walk</button>
+      <button class="btn secondary" onclick="startLineUp()">📜 Line up</button>
+      <button class="btn secondary" onclick="startLearn()">✨ Place</button>
     </div>
     <div class="parent-link">
-      <a href="#" onclick="showParent(); return false;">Parent / Progress</a>
+      <a href="#" onclick="showHowTo(); return false;">How to use</a>
+      · <a href="#" onclick="showParent(); return false;">Parent / Progress</a>
       · <a href="#" onclick="previewParade(); return false;">Preview parade</a>
       · <a href="#" onclick="if(confirm('Reset all progress for this player?')){resetProgress(); location.reload();}">Reset</a>
       · <a href="#" onclick="showProfiles(); return false;">Switch player</a>
+    </div>
+  </div>
+
+  <div id="screen-howto" class="screen">
+    <header>
+      <h1>How to use the Hall</h1>
+      <div class="subtitle">One loop. Keep it short.</div>
+    </header>
+    <div class="card how" style="text-align:left;">
+      <ol>
+        <li><strong>Place a portrait.</strong> Look at the silly picture. Say “#1 Washington” out loud.</li>
+        <li><strong>Walk the doors.</strong> The next door in order. Name who lives there.</li>
+        <li><strong>Line them up</strong> once you have four. Tap 1-2-3-4 in real order.</li>
+        <li><strong>When it shines,</strong> the next new portrait is ready. Repeat.</li>
+      </ol>
+      <p class="hint" style="margin-top:12px;">The big green button on the Hall is always the best next step. You do not need to pick among three games.</p>
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn primary" onclick="showHome(); document.getElementById('next-btn').click();">Do that now</button>
+        <button class="btn secondary" onclick="showHome()">Back to Hall</button>
+      </div>
     </div>
   </div>
 
@@ -128,6 +161,7 @@
     </header>
     <div class="card" style="text-align:left; font-size:0.9rem;">
       <p id="stats-text"></p>
+      <p style="margin-top:10px;"><strong>How kids should play:</strong> Place the picture → Walk that door → after four, Line them up → next new portrait. The green “Do this next” button chooses for them.</p>
       <hr style="border:none;border-top:1px solid #e6d3b0;margin:16px 0;" />
       <p><strong>Family code</strong> (parents only)</p>
       <p id="family-code-value" style="font-size:1.4rem;letter-spacing:0.08em;font-weight:800;margin:6px 0 12px;">—</p>
@@ -138,7 +172,6 @@
         <button class="btn" onclick="saveParentEmail()">Save email</button>
         <button class="btn" onclick="emailCodeToMyself()">Email this code to me</button>
       </div>
-      <p style="margin-top:12px;opacity:.8;">Best backup: email the code to yourself. Forgot-the-code uses a one-time inbox code on the recover screen.</p>
       <div class="btn-row" style="margin-top:16px;">
         <button class="btn" onclick="cloudSaveActive(); toast('Saved to the cloud','success');">Save now</button>
         <button class="btn" onclick="previewParade()">Preview parade</button>
@@ -196,9 +229,11 @@
   <script src="walk.js"></script>
   <script src="sync.js"></script>
   <script src="family.js"></script>
+  <script src="guide.js"></script>
   <script>
     if (typeof renderPlayHud==="function") renderPlayHud();
     if (typeof renderSoundChip==="function") renderSoundChip();
+    if (typeof paintNext==="function") paintNext();
     function previewParade(){
       var e = ERAS[0], shine = false;
       for (var i=0;i<ERAS.length;i++){
