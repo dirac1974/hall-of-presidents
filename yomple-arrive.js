@@ -3,13 +3,11 @@
   var u = (typeof slugName==="function" ? slugName(q.get("u")||q.get("who")||"") : String(q.get("u")||"").toLowerCase());
   var f = String(q.get("f")||q.get("family")||"").trim().toUpperCase();
   if (!u || u==="player") {
-    if (window.YOMPLE_HANDSHAKE && store.activeId && typeof showHome==="function") showHome();
+    if (store.activeId && typeof showHome==="function") showHome();
     return;
   }
   if (f && f.indexOf("-")>0) store.familyCode = f;
-  function go(){
-    if (typeof showHome==="function") showHome();
-  }
+  function go(){ if (typeof showHome==="function") showHome(); }
   var local = (store.profiles||[]).find(function(p){
     return p.username === u || (typeof slugName==="function" && slugName(p.name)===u);
   });
@@ -43,10 +41,14 @@
     if (row.family_code) store.familyCode = row.family_code;
     localStorage.setItem("presidents-palace-v2", JSON.stringify(store));
   }
-  if (typeof cloudGet !== "function") { adoptIdentity({ username:u, display_name:u }); go(); return; }
+  function finish(row){
+    if (row && row.username && typeof applyCloudRow==="function" && row.progress) applyCloudRow(row);
+    else adoptIdentity(row || { username:u, display_name:u });
+    go();
+  }
+  if (typeof cloudGet !== "function") { finish({ username:u, display_name:u }); return; }
   cloudGet(u).then(function(row){
-    if (row && typeof applyCloudRow==="function") { applyCloudRow(row); go(); return null; }
-    if (row) { adoptIdentity(row); go(); return null; }
+    if (row) { finish(row); return null; }
     var sisters = ["bloom_players","garden_players","star_players"];
     var chain = Promise.resolve(null);
     sisters.forEach(function(table){
@@ -60,12 +62,7 @@
     });
     return chain;
   }).then(function(row){
-    if (row === null || row === undefined) return;
-    if (row && row.username) adoptIdentity(row);
-    else adoptIdentity({ username:u, display_name:u });
-    go();
-  }).catch(function(){
-    adoptIdentity({ username:u, display_name:u });
-    go();
-  });
+    if (row === null) return;
+    finish(row);
+  }).catch(function(){ finish({ username:u, display_name:u }); });
 })();
