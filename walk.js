@@ -1,12 +1,19 @@
 var walkRoom = 1, walkRun = 0;
 var lineTarget = [], linePicked = [];
+var walkTimer = null;
+
+function leaveWalk(){
+  if (walkTimer) { clearTimeout(walkTimer); walkTimer = null; }
+  showHome();
+}
 
 if (typeof showScreen === "function") {
   var _show = showScreen;
   showScreen = function(id){
     _show(id);
-    if (id==="screen-walk" || id==="screen-line") {
-      document.getElementById("main-nav").style.display = "flex";
+    var nav = document.getElementById("main-nav");
+    if (nav && (id==="screen-walk" || id==="screen-line" || id==="screen-howto" || id==="screen-home")) {
+      nav.style.display = "flex";
     }
   };
 }
@@ -41,6 +48,7 @@ function firstUnlit(){
 function startWalk(){
   var any = PRESIDENTS.some(function(p){ return getActiveProgress()[p.n].introduced; });
   if (!any) { startLearn(); return; }
+  if (walkTimer) { clearTimeout(walkTimer); walkTimer = null; }
   walkRoom = firstUnlit().n;
   walkRun = 0;
   renderWalk();
@@ -76,7 +84,8 @@ function answerWalk(ok, btn, p){
     bumpGood(p);
     walkRun += 1;
     toast("#"+p.n+" "+p.short+" — the path continues", "success");
-    setTimeout(function(){
+    walkTimer = setTimeout(function(){
+      walkTimer = null;
       if (walkRun >= 6) { toast("Great walk! Back to the Hall.", "success"); showHome(); }
       else { walkRoom += 1; renderWalk(); }
     }, 1050);
@@ -84,12 +93,13 @@ function answerWalk(ok, btn, p){
     btn.classList.add("wrong");
     bumpMiss(p);
     toast("Picture it: "+p.mnemonic, "warm");
-    setTimeout(function(){ showLearnCard(p); }, 1100);
+    walkTimer = setTimeout(function(){ walkTimer = null; showLearnCard(p); }, 1100);
   }
 }
 function startLineUp(){
   var intro = PRESIDENTS.filter(function(p){ return getActiveProgress()[p.n].introduced; });
   if (intro.length < 4) { toast("Place 4 portraits first, then line them up!", "warm"); startLearn(); return; }
+  if (walkTimer) { clearTimeout(walkTimer); walkTimer = null; }
   var startAt = Math.max(0, Math.min(firstUnlit().n-1, intro.length-4));
   lineTarget = PRESIDENTS.slice(startAt, startAt+4);
   linePicked = [];
@@ -134,6 +144,6 @@ function pickLine(p, el){
     document.getElementById("line-pool").dataset.built = "";
     toast("Perfect order! The hallway is clear.", "success");
     if (typeof burst==="function") burst();
-    setTimeout(showHome, 1100);
+    walkTimer = setTimeout(function(){ walkTimer = null; showHome(); }, 1100);
   } else renderLine();
 }
