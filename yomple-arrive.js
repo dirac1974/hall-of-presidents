@@ -19,11 +19,12 @@
     return;
   }
   function adoptIdentity(row){
+    row = row || {};
     var id = "u-"+(row.username||u);
     var existing = (store.profiles||[]).find(function(p){ return p.id===id || p.username===(row.username||u); });
     if (existing) {
       existing.username = row.username || u;
-      existing.name = row.display_name || row.name || existing.name;
+      existing.name = row.display_name || row.name || existing.name || u;
       existing.avatar = row.avatar || existing.avatar;
       store.activeId = existing.id;
     } else {
@@ -42,13 +43,14 @@
     localStorage.setItem("presidents-palace-v2", JSON.stringify(store));
   }
   function finish(row){
-    if (row && row.username && typeof applyCloudRow==="function" && row.progress) applyCloudRow(row);
-    else adoptIdentity(row || { username:u, display_name:u });
+    if (row && row.progress && typeof applyCloudRow==="function") applyCloudRow(row);
+    else adoptIdentity(row);
     go();
   }
   if (typeof cloudGet !== "function") { finish({ username:u, display_name:u }); return; }
+  var landed = false;
   cloudGet(u).then(function(row){
-    if (row) { finish(row); return null; }
+    if (row) { landed = true; finish(row); return null; }
     var sisters = ["bloom_players","garden_players","star_players"];
     var chain = Promise.resolve(null);
     sisters.forEach(function(table){
@@ -62,7 +64,7 @@
     });
     return chain;
   }).then(function(row){
-    if (row === null) return;
-    finish(row);
+    if (landed) return;
+    finish(row || { username:u, display_name:u });
   }).catch(function(){ finish({ username:u, display_name:u }); });
 })();
