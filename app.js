@@ -8,7 +8,7 @@ function startLearn() {
       return pa.state - pb.state || pa.consec - pb.consec;
     })[0];
   } else target = nextToIntroduce();
-  if (!target) { toast("Everything is already shining! 🌟", "success"); return; }
+  if (!target) { toast("Everything is already shining! \ud83c\udf1f", "success"); return; }
   showLearnCard(target);
 }
 function showLearnCard(p) {
@@ -83,19 +83,25 @@ function recordCorrect(p) {
   var st = getActiveProgress()[p.n];
   st.consec = (st.consec || 0) + 1;
   if (st.state === 0) st.state = 1;
-  if (st.state === 1 && st.consec >= 2) { st.state = 2; toast("✨ #"+p.n+" "+p.short+" is getting solid!", "success"); }
-  else if (st.state === 2 && st.consec >= 3) { st.state = 3; toast("🌟 #"+p.n+" "+p.short+" is SHINING!", "success"); }
+  if (st.state === 1 && st.consec >= 2) { st.state = 2; toast("\u2728 #"+p.n+" "+p.short+" is getting solid!", "success"); }
+  else if (st.state === 2 && st.consec >= 3) { st.state = 3; toast("\ud83c\udf1f #"+p.n+" "+p.short+" is SHINING!", "success"); }
   else toast("Yes! #"+p.n+" "+p.short, "success");
   saveStore();
   setTimeout(function(){ if (getCooking().length > 0 || nextToIntroduce()) startPractice(); else showHome(); }, 1400);
 }
 function recordMiss(p) {
   getActiveProgress()[p.n].consec = 0;
-  toast("Almost… picture the memory image for #"+p.n, "warm");
+  toast("Almost\u2026 picture the memory image for #"+p.n, "warm");
   saveStore();
   setTimeout(startPractice, 1800);
 }
 loadStore();
-if (store.profiles.length === 0) showCreateProfile();
-else if (!store.activeId) showProfiles();
-else showHome();
+(function bootHall(){
+  var yq = new URLSearchParams(location.search);
+  if (yq.get("u") || yq.get("who") || yq.get("from") === "yomple") {
+    window.YOMPLE_HANDSHAKE = true;
+    return;
+  }
+  if (store.activeId) { showHome(); return; }
+  location.replace("https://yomple.com/");
+})();
