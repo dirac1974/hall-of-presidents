@@ -79,6 +79,7 @@
       <div class="hud-chip" id="combo-chip">🔥 <span id="combo-count">0</span></div>
       <div class="hud-chip sound" id="sound-chip" onclick="toggleSound()">🔊</div>
     </div>
+    <div id="mission-text" style="display:none"></div>
     <div class="next-card" id="next-card">
       <div class="kicker">Do this next</div>
       <p id="next-why">Look at the picture, say the number, then walk the next door.</p>
@@ -142,7 +143,7 @@
   <div id="screen-walk" class="screen">
     <header><h1 id="walk-title">Palace Walk</h1><div class="subtitle">Open the next door in order</div></header>
     <div class="card" id="walk-card"></div>
-    <div class="btn-row"><button class="btn secondary" onclick="showHome()">Hall</button></div>
+    <div class="btn-row"><button class="btn primary" onclick="leaveWalk()">Take a break · Hall</button></div>
   </div>
 
   <div id="screen-line" class="screen">
@@ -151,7 +152,7 @@
       <div class="line-slot" id="line-slots"></div>
       <div class="line-pool" id="line-pool"></div>
     </div>
-    <div class="btn-row"><button class="btn secondary" onclick="showHome()">Hall</button></div>
+    <div class="btn-row"><button class="btn primary" onclick="leaveWalk()">Take a break · Hall</button></div>
   </div>
 
   <div id="screen-parent" class="screen">
@@ -213,7 +214,7 @@
   </div>
 
   <nav id="main-nav">
-    <button class="active" onclick="showHome()" id="nav-home"><span class="icon">🏛️</span>Hall</button>
+    <button class="active" onclick="leaveWalk()" id="nav-home"><span class="icon">🏛️</span>Hall</button>
     <button onclick="startWalk()" id="nav-learn"><span class="icon">🚪</span>Walk</button>
     <button onclick="startLineUp()" id="nav-practice"><span class="icon">📜</span>Line up</button>
   </nav>
@@ -230,6 +231,7 @@
   <script src="sync.js"></script>
   <script src="family.js"></script>
   <script src="guide.js"></script>
+  <script src="home-fix.js"></script>
   <script>
     if (typeof renderPlayHud==="function") renderPlayHud();
     if (typeof renderSoundChip==="function") renderSoundChip();
