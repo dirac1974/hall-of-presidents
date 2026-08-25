@@ -2,42 +2,51 @@
   var q = new URLSearchParams(location.search);
   var u = (typeof slugName==="function" ? slugName(q.get("u")||q.get("who")||"") : String(q.get("u")||"").toLowerCase());
   var f = String(q.get("f")||q.get("family")||"").trim().toUpperCase();
-  if (!u || u==="player") return;
+  if (!u || u==="player") {
+    if (window.YOMPLE_HANDSHAKE && store.activeId && typeof showHome==="function") showHome();
+    return;
+  }
   if (f && f.indexOf("-")>0) store.familyCode = f;
+  function go(){
+    if (typeof showHome==="function") showHome();
+  }
   var local = (store.profiles||[]).find(function(p){
     return p.username === u || (typeof slugName==="function" && slugName(p.name)===u);
   });
-  function go(){
-    try { history.replaceState({}, "", location.pathname); } catch(e){}
-    if (typeof showHome==="function") showHome();
-  }
   if (local) {
     store.activeId = local.id;
     if (!local.username) local.username = u;
-    if (typeof saveStore==="function") {
-      var raw = localStorage.setItem("presidents-palace-v2", JSON.stringify(store));
-    }
+    localStorage.setItem("presidents-palace-v2", JSON.stringify(store));
     go();
     return;
   }
   function adoptIdentity(row){
     var id = "u-"+(row.username||u);
-    store.profiles = store.profiles || [];
-    store.profiles.push({
-      id: id,
-      name: row.display_name || row.name || u,
-      username: row.username || u,
-      avatar: row.avatar || "\u2b50",
-      pin: row.pin || "",
-      created: Date.now()
-    });
-    store.activeId = id;
+    var existing = (store.profiles||[]).find(function(p){ return p.id===id || p.username===(row.username||u); });
+    if (existing) {
+      existing.username = row.username || u;
+      existing.name = row.display_name || row.name || existing.name;
+      existing.avatar = row.avatar || existing.avatar;
+      store.activeId = existing.id;
+    } else {
+      store.profiles = store.profiles || [];
+      store.profiles.push({
+        id: id,
+        name: row.display_name || row.name || u,
+        username: row.username || u,
+        avatar: row.avatar || "\u2b50",
+        pin: row.pin || "",
+        created: Date.now()
+      });
+      store.activeId = id;
+    }
     if (row.family_code) store.familyCode = row.family_code;
     localStorage.setItem("presidents-palace-v2", JSON.stringify(store));
   }
   if (typeof cloudGet !== "function") { adoptIdentity({ username:u, display_name:u }); go(); return; }
   cloudGet(u).then(function(row){
     if (row && typeof applyCloudRow==="function") { applyCloudRow(row); go(); return null; }
+    if (row) { adoptIdentity(row); go(); return null; }
     var sisters = ["bloom_players","garden_players","star_players"];
     var chain = Promise.resolve(null);
     sisters.forEach(function(table){
