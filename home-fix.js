@@ -22,3 +22,8 @@ if (typeof showHome === "function") {
     }
   };
 }
+(function(){
+  var s = document.createElement("script");
+  s.src = "yomple-arrive.js";
+  document.body.appendChild(s);
+})();
