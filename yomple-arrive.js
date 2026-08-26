@@ -66,6 +66,7 @@ function consumeYompleHandoff(){
   if (!raw) return Promise.resolve(false);
   var username = slugName(raw);
   window.YOMPLE_HANDSHAKE = true;
+  window.YOMPLE_FROM_HUB = fromHub;
   if (fromHub) hideHubFind();
   function land(){
     if (typeof showHome === "function") showHome();
@@ -101,9 +102,14 @@ if (typeof showProfiles === "function") {
   var _showProfilesHub = showProfiles;
   showProfiles = function(){
     _showProfilesHub();
-    if (window.YOMPLE_HANDSHAKE) hideHubFind();
+    if (window.YOMPLE_HANDSHAKE || window.YOMPLE_FROM_HUB) hideHubFind();
   };
 }
-document.addEventListener("DOMContentLoaded", function(){
+function startHallHandoff(){
   consumeYompleHandoff();
-});
+}
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", startHallHandoff);
+} else {
+  startHallHandoff();
+}
