@@ -103,6 +103,6 @@ loadStore();
     window.YOMPLE_HANDSHAKE = true;
     return;
   }
-  if (store.activeId) { showHome(); return; }
-  location.replace("https://yomple.com/");
+  if (store.activeId) showHome();
+  else showProfiles();
 })();
