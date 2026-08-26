@@ -1,4 +1,7 @@
-/* Kid-friendly, 1–2 sentences. Shown only after recall or behind an optional peek — never on Walk/Test prompts. */
+/* Kid-friendly, 1–2 sentences.
+   Collapsed while encoding (new / practicing).
+   Open automatically once solid or shining — kids should not have to hunt for it.
+   Never on Walk / Test question prompts. */
 var PRESIDENT_FACTS = {
   1: "Led the army in the Revolution and helped the new country start. People asked him to be the first president.",
   2: "A lawyer from Massachusetts who helped argue for independence. He was the first president to live in the White House.",
@@ -53,11 +56,20 @@ function factFor(p){
   if (!p) return "";
   return PRESIDENT_FACTS[p.n] || "";
 }
-function factBlock(p, open){
+function isRecallSolid(p){
+  try {
+    var st = (typeof getActiveProgress==="function" && getActiveProgress()[p.n]) || {};
+    return (st.state || 0) >= 2;
+  } catch (e) { return false; }
+}
+function factBlock(p, forceOpen){
   var f = factFor(p);
   if (!f) return "";
+  // Open when forced (Test success) or when the door is solid / shining
+  var open = !!forceOpen || isRecallSolid(p);
   if (open) {
     return '<div class="history-box open"><div class="history-kicker">A bit of history</div><p>'+f+'</p></div>';
   }
+  // Still encoding — available, but not in the way
   return '<details class="history-peek"><summary>A bit of history</summary><p>'+f+'</p></details>';
 }
