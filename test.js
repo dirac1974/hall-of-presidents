@@ -4,6 +4,8 @@ var testHints = 0;
 var testListening = false;
 var testRec = null;
 var testSpeechPass = 0;
+var testTotal = 0;
+var testStep = 0;
 
 var NAME_NICKS = {
   washington: ["george","gw"],
@@ -138,19 +140,21 @@ function startTest(){
     if (typeof startLearn==="function") startLearn();
     return;
   }
-  var cook = (typeof getCooking==="function") ? getCooking() : [];
-  var rest = intro.filter(function(p){ return cook.indexOf(p)<0; });
-  testQueue = cook.concat(rest).slice(0, 8);
+  intro.sort(function(a,b){ return a.n - b.n; });
+  testQueue = intro.slice();
+  testTotal = testQueue.length;
+  testStep = 0;
   testHints = 0;
   nextTest();
 }
 function nextTest(){
   if (!testQueue.length) {
-    toast("Nice test. Back to the Hall.", "success");
+    toast("You named them in order. Back to the Hall.", "success");
     if (typeof showHome==="function") showHome();
     return;
   }
   testP = testQueue.shift();
+  testStep += 1;
   testHints = 0;
   renderTestAsk();
 }
@@ -162,7 +166,7 @@ function renderTestAsk(){
     '<div class="door" id="test-door"><div class="door-num">#'+p.n+'</div>' +
     '<div class="door-face" style="min-height:88px;color:#ffe6a6;font-weight:800;display:flex;align-items:center;justify-content:center;">Who lives here?</div>' +
     '<div class="door-knob"></div></div>' +
-    '<p class="walk-prompt">Say or type the name</p>' +
+    '<p class="walk-prompt">Door '+testStep+' of '+testTotal+' \u2014 in order</p>' +
     '<input id="test-guess" type="text" autocomplete="off" autocapitalize="words" enterkeyhint="done" placeholder="Last name is enough" ' +
     'style="width:100%;padding:12px;border-radius:12px;border:2px solid var(--wood);font-size:1.1rem;">' +
     '<p id="test-hint" class="hint" style="min-height:1.4em;margin-top:8px;"></p>' +
