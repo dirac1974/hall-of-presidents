@@ -23,7 +23,8 @@ function showLearnCard(p) {
   card.innerHTML =
     '<div class="big-num">#'+p.n+'</div><div class="big-name">'+p.name+'</div>' +
     '<div class="mnemonic-box">'+imgHtml+'<p style="margin-top:8px;"><strong>Memory picture:</strong><br>'+p.mnemonic+'</p></div>' +
-    '<p class="hint">Say the number and name out loud while you picture it. Make it silly and moving!</p>';
+    '<p class="hint">Say the number and name out loud while you picture it. Make it silly and moving!</p>' +
+    (typeof factBlock==="function" ? factBlock(p, false) : "");
   document.getElementById("btn-got-it").onclick = function(){ gotIt(p); };
   showScreen("screen-learn");
 }
