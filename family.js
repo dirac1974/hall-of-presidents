@@ -50,14 +50,14 @@ function emailCodeToMyself(){
   ensureFamily();
   var em = (document.getElementById("parent-email") && document.getElementById("parent-email").value || store.parentEmail || "").trim();
   var kids = (store.profiles||[]).map(function(p){ return p.name; }).join(", ") || "(no players yet)";
-  var body = "Hall of Presidents / Yomple family code:\n\n"+store.familyCode+"\n\nPlayers: "+kids+"\n\nOn a new device: Parent recovery → type this code. Do not share it with the kids.";
+  var body = "Hall of Presidents / Yomple family code:\n\n"+store.familyCode+"\n\nPlayers: "+kids+"\n\nOn a new device: Parent recovery \u2192 type this code. Do not share it with the kids.";
   var href = "mailto:"+encodeURIComponent(em)+"?subject="+encodeURIComponent("Our Hall of Presidents family code")+"&body="+encodeURIComponent(body);
   window.location.href = href;
 }
 function sendEmailOtp(){
   var em = (document.getElementById("recover-email") && document.getElementById("recover-email").value || "").trim().toLowerCase();
   if (!em || em.indexOf("@") < 1) { toast("Type the parent email", "warm"); return; }
-  toast("Sending a one-time code…");
+  toast("Sending a one-time code\u2026");
   fetch(SB_URL+"/auth/v1/otp", {
     method: "POST",
     headers: { apikey: SB_KEY, Authorization: "Bearer "+SB_KEY, "Content-Type": "application/json" },
@@ -94,7 +94,7 @@ function verifyEmailOtp(){
 function restoreFamily(code){
   code = String(code || (document.getElementById("restore-code") && document.getElementById("restore-code").value) || "").trim().toUpperCase();
   if (!code || code.indexOf("-") < 0) { toast("Type the family code (like MAPLE-K7Q2)", "warm"); return; }
-  toast("Finding this household…");
+  toast("Finding this household\u2026");
   fetch(SB_URL+"/rest/v1/hop_players?family_code=eq."+encodeURIComponent(code), { headers: sbHeaders() })
     .then(function(r){ return r.json(); })
     .then(function(rows){
@@ -102,8 +102,8 @@ function restoreFamily(code){
       if (!rows || !rows.length) {
         saveStore();
         upsertFamilyRow();
-        toast("Code saved. No players under it yet — create them here.", "warm");
-        showCreateProfile();
+        toast("Code saved. New players need administrator approval on Yomple.", "warm");
+        location.href = "https://yomple.com/?request=1";
         return;
       }
       rows.forEach(function(row, i){
@@ -112,7 +112,7 @@ function restoreFamily(code){
       });
       store.familyCode = code;
       saveStore();
-      toast("Household restored — "+rows.length+" player"+(rows.length===1?"":"s"), "success");
+      toast("Household restored \u2014 "+rows.length+" player"+(rows.length===1?"":"s"), "success");
       setTimeout(showProfiles, 500);
     })
     .catch(function(){ toast("Could not reach the cloud just now", "warm"); });
@@ -132,10 +132,14 @@ if (typeof payloadForActive === "function") {
   };
 }
 if (typeof createProfile === "function") {
-  var _create = createProfile;
   createProfile = function(){
-    ensureFamily();
-    return _create.apply(this, arguments);
+    location.href = "https://yomple.com/?request=1";
+  };
+}
+if (typeof showCreateProfile === "function") {
+  var _showCreate = showCreateProfile;
+  showCreateProfile = function(){
+    location.href = "https://yomple.com/?request=1";
   };
 }
 if (store && store.profiles && store.profiles.length) ensureFamily();
