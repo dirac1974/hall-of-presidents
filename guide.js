@@ -2,6 +2,7 @@ function nextMove(){
   var intro = getIntroducedCount();
   var cooking = (typeof getCooking==="function") ? getCooking() : [];
   var nxt = (typeof nextToIntroduce==="function") ? nextToIntroduce() : null;
+  var solid = (typeof getSolidCount==="function") ? getSolidCount() : 0;
   if (intro < 3 && nxt) {
     return {
       why: "First look at the silly picture. Say the number and the name out loud.",
@@ -9,7 +10,7 @@ function nextMove(){
       go: function(){ showLearnCard(nxt); }
     };
   }
-  if (cooking.length) {
+  if (cooking.length && cooking.length < 3) {
     var p = cooking[0];
     return {
       why: "Walk the doors in order. Picture the memory image as you go.",
@@ -17,11 +18,25 @@ function nextMove(){
       go: startWalk
     };
   }
+  if (intro >= 4 && solid >= 3 && typeof startTest==="function") {
+    return {
+      why: "No choices this time. Look at the number and name the door.",
+      label: "Test the doors you know",
+      go: startTest
+    };
+  }
   if (intro >= 4) {
     return {
       why: "Put four presidents in the real order — that is how the hallway sticks.",
       label: "Line up the next four",
       go: startLineUp
+    };
+  }
+  if (cooking.length) {
+    return {
+      why: "Walk the doors in order. Picture the memory image as you go.",
+      label: "Walk from #"+cooking[0].n+" "+cooking[0].short,
+      go: startWalk
     };
   }
   if (nxt) {
@@ -32,9 +47,9 @@ function nextMove(){
     };
   }
   return {
-    why: "The Hall is shining. Walk it once more to keep it bright.",
-    label: "Walk the whole palace",
-    go: startWalk
+    why: "The Hall is shining. Name the doors with no hints from a list.",
+    label: "Test the whole palace",
+    go: typeof startTest==="function" ? startTest : startWalk
   };
 }
 function paintNext(){
