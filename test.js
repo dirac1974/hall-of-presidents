@@ -95,24 +95,18 @@ function nameMatches(guess, p){
   var full = foldName(p.name);
   var last = lastNameOf(p);
   var short = foldName(String(p.short||"").replace(/\([^)]*\)/g,"").replace(/\d+/g,""));
-
   if (g === full || g === last || g === short) return true;
   if (closeEnough(g, full) || closeEnough(g, last) || closeEnough(g, short)) return true;
-
-  // "George Washington", "G Washington", spoken fragments
   var bits = g.split(" ").filter(Boolean);
   if (bits.length) {
     var gLast = bits[bits.length - 1];
     if (closeEnough(gLast, last)) return true;
     if (last.indexOf(" ") >= 0 && closeEnough(bits.slice(-2).join(" "), last)) return true;
   }
-
-  // full name without spaces / partial containment of last name
   var gCompact = g.replace(/ /g,"");
   var lastCompact = last.replace(/ /g,"");
   if (lastCompact.length >= 4 && gCompact.indexOf(lastCompact) >= 0) return true;
   if (lastCompact.length >= 4 && lastCompact.indexOf(gCompact) >= 0 && gCompact.length >= lastCompact.length - 1) return true;
-
   var nicks = NAME_NICKS[last] || NAME_NICKS[last.split(" ").pop()] || [];
   for (var i=0;i<nicks.length;i++){
     if (g === nicks[i] || closeEnough(g, nicks[i])) return true;
@@ -195,6 +189,7 @@ function renderTestCard(p){
     '<div class="big-name">'+p.name+'</div>' +
     (pic || '<div style="font-size:3rem">'+p.emoji+'</div>') +
     '<div class="mnemonic-box"><p><strong>Memory picture:</strong><br>'+p.mnemonic+'</p></div>' +
+    (typeof factBlock==="function" ? factBlock(p, true) : "") +
     '<div class="btn-row" style="margin-top:12px;"><button type="button" class="btn primary" onclick="nextTest()">Next door</button></div>';
 }
 function submitTest(){
@@ -224,11 +219,8 @@ function submitTest(){
 function listenTest(){
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) { toast("This browser cannot hear yet. Type the name.", "warm"); return; }
-
-  // Blur the text field so iOS does not cancel recognition
   var input = document.getElementById("test-guess");
   if (input) input.blur();
-
   if (testListening && testRec) {
     try { testRec.stop(); } catch(e){}
     testListening = false;
@@ -236,14 +228,12 @@ function listenTest(){
     if (mic0) mic0.textContent = "\ud83c\udfa4 Speak";
     return;
   }
-
   try { if (testRec) testRec.abort(); } catch(e){}
   testRec = new SR();
   testRec.lang = "en-US";
   testRec.continuous = false;
   testRec.interimResults = true;
   testRec.maxAlternatives = 3;
-
   var gotFinal = false;
   var heard = "";
   testListening = true;
@@ -251,7 +241,6 @@ function listenTest(){
   var mic = document.getElementById("test-mic");
   if (mic) mic.textContent = "Listening\u2026";
   toast("Listening \u2014 say the last name", "warm");
-
   testRec.onresult = function(ev){
     heard = "";
     for (var i = ev.resultIndex; i < ev.results.length; i++) {
@@ -267,7 +256,6 @@ function listenTest(){
       submitTest();
     }
   };
-
   testRec.onerror = function(ev){
     testListening = false;
     if (mic) mic.textContent = "\ud83c\udfa4 Speak";
@@ -276,18 +264,14 @@ function listenTest(){
       toast("Allow the microphone, then tap Speak again.", "warm");
     } else if (err === "no-speech") {
       toast("Did not catch that. Tap Speak and try once more.", "warm");
-    } else if (err === "aborted") {
-      // ignore intentional stops
-    } else {
+    } else if (err !== "aborted") {
       toast("Could not hear that. Type the last name.", "warm");
     }
   };
-
   testRec.onend = function(){
     var wasListening = testListening;
     testListening = false;
     if (mic) mic.textContent = "\ud83c\udfa4 Speak";
-    // iPhone often ends the first session right after the permission prompt with no transcript
     if (!gotFinal) {
       if (foldName(heard) || (input && foldName(input.value))) {
         submitTest();
@@ -296,7 +280,6 @@ function listenTest(){
       }
     }
   };
-
   try {
     testRec.start();
   } catch (e) {
