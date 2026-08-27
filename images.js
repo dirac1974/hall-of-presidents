@@ -47,7 +47,11 @@ const IMG_IDS = {
   46:"1KP9BRU-2OfkO2Fgr84-ES26Wk6pkVJvH",
   47:"183M2jiTkREPi6OIDW6rYlR7hFaNe65n7"
 };
+const IMG_LOCAL = {
+  29: "images/pres-29.svg"
+};
 function presImg(n, w){
+  if (IMG_LOCAL[n]) return IMG_LOCAL[n];
   var id = IMG_IDS[n];
   if (!id) return null;
   var sz = w || 600;
@@ -59,10 +63,15 @@ function presImgAlt(n, w){
   return "https://drive.google.com/thumbnail?id=" + id + "&sz=w" + (w || 600);
 }
 function imgFail(el){
-  if (!el.dataset.tried) {
-    el.dataset.tried = "1";
-    var n = el.dataset.n;
-    var alt = n && presImgAlt(Number(n), Number(el.dataset.w||600));
+  var n = Number(el.dataset.n||0);
+  var tried = Number(el.dataset.tried||0);
+  el.dataset.tried = String(tried + 1);
+  if (tried === 0 && IMG_IDS[n]) {
+    el.src = "https://lh3.googleusercontent.com/d/" + IMG_IDS[n] + "=s" + (el.dataset.w||600);
+    return;
+  }
+  if (tried === 1 && IMG_IDS[n]) {
+    var alt = presImgAlt(n, Number(el.dataset.w||600));
     if (alt) { el.src = alt; return; }
   }
   el.style.display = "none";
