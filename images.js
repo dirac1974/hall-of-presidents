@@ -47,32 +47,50 @@ const IMG_IDS = {
   46:"1KP9BRU-2OfkO2Fgr84-ES26Wk6pkVJvH",
   47:"183M2jiTkREPi6OIDW6rYlR7hFaNe65n7"
 };
-const IMG_LOCAL = {
-  29: "images/pres-29.svg"
-};
+const IMG_LOCAL = { 29: "images/pres-29.svg" };
+
+function pad2(n){ return (n<10?"0":"")+n; }
+function personOf(n){
+  return (typeof PRESIDENTS!=="undefined" && PRESIDENTS[n-1]) || { n:n, short:"#"+n, emoji:"\ud83c\udff4" };
+}
+function localCardSrc(n){
+  var p = personOf(n);
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520">' +
+    '<rect width="400" height="520" rx="28" fill="#c9a36a"/>' +
+    '<rect x="18" y="18" width="364" height="484" rx="20" fill="#f6ead2"/>' +
+    '<text x="200" y="210" text-anchor="middle" font-size="92">'+(p.emoji||"")+'</text>' +
+    '<text x="200" y="300" text-anchor="middle" font-family="Georgia,serif" font-size="28" fill="#5a3a1c">#'+n+'</text>' +
+    '<text x="200" y="348" text-anchor="middle" font-family="Georgia,serif" font-size="26" fill="#3d2b1a">'+(p.short||"")+'</text>' +
+    '</svg>';
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
 function presImg(n, w){
   if (IMG_LOCAL[n]) return IMG_LOCAL[n];
   var id = IMG_IDS[n];
-  if (!id) return null;
+  if (!id) return localCardSrc(n);
   var sz = w || 600;
+  // Later doors: thumbnail URL first (iOS often drops the big lh3 batch after ~28)
+  if (n >= 29) return "https://drive.google.com/thumbnail?id=" + id + "&sz=w" + sz;
   return "https://lh3.googleusercontent.com/d/" + id + "=s" + sz;
 }
 function presImgAlt(n, w){
   var id = IMG_IDS[n];
-  if (!id) return null;
-  return "https://drive.google.com/thumbnail?id=" + id + "&sz=w" + (w || 600);
+  if (!id) return localCardSrc(n);
+  var sz = w || 600;
+  if (n >= 29) return "https://lh3.googleusercontent.com/d/" + id + "=s" + sz;
+  return "https://drive.google.com/thumbnail?id=" + id + "&sz=w" + sz;
 }
 function imgFail(el){
   var n = Number(el.dataset.n||0);
   var tried = Number(el.dataset.tried||0);
   el.dataset.tried = String(tried + 1);
-  if (tried === 0 && IMG_IDS[n]) {
-    el.src = "https://lh3.googleusercontent.com/d/" + IMG_IDS[n] + "=s" + (el.dataset.w||600);
-    return;
-  }
-  if (tried === 1 && IMG_IDS[n]) {
+  if (tried === 0) {
     var alt = presImgAlt(n, Number(el.dataset.w||600));
-    if (alt) { el.src = alt; return; }
+    if (alt && alt !== el.src) { el.src = alt; return; }
+  }
+  if (tried === 1) {
+    el.src = localCardSrc(n);
+    return;
   }
   el.style.display = "none";
   var em = el.nextElementSibling;
@@ -82,5 +100,5 @@ function imgTag(n, w, style){
   var src = presImg(n, w);
   if (!src) return "";
   var st = style || "width:100%;max-width:280px;border-radius:14px;margin:10px auto;display:block;";
-  return '<img alt="" data-n="'+n+'" data-w="'+(w||600)+'" referrerpolicy="no-referrer" loading="lazy" src="'+src+'" onerror="imgFail(this)" style="'+st+'">';
+  return '<img alt="" data-n="'+n+'" data-w="'+(w||600)+'" referrerpolicy="no-referrer" loading="eager" src="'+src+'" onerror="imgFail(this)" style="'+st+'">';
 }
