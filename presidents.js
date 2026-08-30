@@ -19,7 +19,7 @@ const PRESIDENTS = [
   { n:18, name:"Ulysses S. Grant", short:"Grant", mnemonic:"A friendly genie GRANTing wishes.", emoji:"🧞" },
   { n:19, name:"Rutherford B. Hayes", short:"Hayes", mnemonic:"Saying HEY! while giving a high-five in a hay field.", emoji:"🙌" },
   { n:20, name:"James A. Garfield", short:"Garfield", mnemonic:"Garfield the cat eating twenty lasagnas!", emoji:"🐱" },
-  { n:21, name:"Chester A. Arthur", short:"Arthur", mnemonic:"King Arthur writing a book as an AUTHOR.", emoji:"👑" },
+  { n:21, name:"Chester A. Arthur", short:"Arthur", mnemonic:"King Arthur signing 21 books as an AUTHOR.", emoji:"👑" },
   { n:22, name:"Grover Cleveland", short:"Cleveland", mnemonic:"A giant CLEAVER cutting corn.", emoji:"🌽" },
   { n:23, name:"Benjamin Harrison", short:"B. Harrison", mnemonic:"Another hairy monkey (Harrison) swinging!", emoji:"🦧" },
   { n:24, name:"Grover Cleveland", short:"Cleveland 2", mnemonic:"The same cleaver comes back for round two!", emoji:"🌽" },
