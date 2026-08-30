@@ -24,6 +24,9 @@
     .history-peek[open] summary::before{content:"▾ ";}
     .history-kicker{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#8b5e3c;margin-bottom:4px}
     .history-peek p,.history-box p{margin:6px 0 0;font-size:.92rem;line-height:1.4;color:#3d2b1a}
+    .zone-label{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8b5e3c;text-align:center;margin:10px 0 6px}
+    #zone-row{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 auto 8px;max-width:440px}
+    #zone-row .zone-btn{flex:1 1 42%;min-width:140px;font-size:.92rem}
   </style>
 </head>
 <body>
@@ -96,6 +99,8 @@
     <div class="pips" id="pips"></div>
     <div id="era-row" class="era-row"></div>
     <div class="hall" id="hall"></div>
+    <div class="zone-label">Train a zone</div>
+    <div id="zone-row"></div>
     <div class="btn-row">
       <button class="btn secondary" onclick="startWalk()">🚪 Walk</button>
       <button class="btn secondary" onclick="startLineUp()">📜 Line up</button>
@@ -120,11 +125,11 @@
       <ol>
         <li><strong>Place a portrait.</strong> Look at the silly picture. Say the number and name out loud.</li>
         <li><strong>Walk the doors.</strong> Name who lives at the next door in order.</li>
-        <li><strong>Line them up</strong> once you have four.</li>
-        <li><strong>Test</strong> with no multiple choice when doors feel familiar.</li>
-        <li><strong>Optional:</strong> open “A bit of history” only after the picture is locked in. It is a bonus, not the path.</li>
+        <li><strong>Train a zone</strong> if you want to start at 1–12, 13–24, 25–36, or 37–47.</li>
+        <li><strong>Practice test</strong> is 1–47 with choices. <strong>Actual test</strong> is number only.</li>
+        <li><strong>Optional:</strong> history after the picture is locked in.</li>
       </ol>
-      <p class="hint" style="margin-top:12px;">The green button is always the best next step for order. History never appears on Walk or Test questions.</p>
+      <p class="hint" style="margin-top:12px;">The green button is always the best next step for order. History never appears on Walk or the actual Test questions.</p>
       <div class="btn-row" style="margin-top:16px;">
         <button class="btn primary" onclick="showHome(); document.getElementById('next-btn').click();">Do that now</button>
         <button class="btn secondary" onclick="showHome()">Back to Hall</button>
@@ -167,7 +172,7 @@
   <div id="screen-test" class="screen">
     <header>
       <h1>Test</h1>
-      <div class="subtitle">No choices. Name the door.</div>
+      <div class="subtitle">Practice with choices, or take the real test.</div>
     </header>
     <div class="card" id="test-card"></div>
   </div>
@@ -179,7 +184,7 @@
     </header>
     <div class="card" style="text-align:left; font-size:0.9rem;">
       <p id="stats-text"></p>
-      <p style="margin-top:10px;"><strong>How kids should play:</strong> Place the picture → Walk that door → Line up → Test. History is optional and never on the question screens.</p>
+      <p style="margin-top:10px;"><strong>How kids should play:</strong> Place the picture → Walk that door → Line up → Practice test → Actual test. History is optional and never on the actual Test questions.</p>
       <hr style="border:none;border-top:1px solid #e6d3b0;margin:16px 0;" />
       <p><strong>Family code</strong> (parents only)</p>
       <p id="family-code-value" style="font-size:1.4rem;letter-spacing:0.08em;font-weight:800;margin:6px 0 12px;">—</p>
