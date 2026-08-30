@@ -1,4 +1,4 @@
-const IMG_VER = "8306";
+const IMG_VER = "8307";
 const IMG_IDS = {
   1:"1TD9UsI14L1fsPHnnCsqG9HHdrLD1IfDH",
   2:"1mea_p_THjTZrBn2qRFUuWs15U-Kw8a7P",
@@ -25,7 +25,7 @@ const IMG_IDS = {
   23:"1sfcSrEFhMnr0xM5N5VQ91jyQy93FeVH1",
   24:"1k-0fTgeZiys0SBsrzHyaWaa_jcZsh3j0",
   25:"1sWtQ5D75kohONJWA1-DzYh4U0k4pL1OE",
-  26:"1_bfbpEapK9T_8qzzX3bXLW1LcpBMItxd",
+  26:"1KrOXhWI58jUvdU7bf-Y6PRPRIitlekLL",
   27:"1kUGAB3K3_VAjaR3CTOgeao7wOrlOXfJO",
   28:"1GqXIgKqBzdoZ18qNW2OtjF-qlZn1d5UR",
   29:"1K66MYdDxmoRoQA7dBTdkP01l0PF41FRM",
