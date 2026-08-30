@@ -21,7 +21,7 @@ const PRESIDENTS = [
   { n:20, name:"James A. Garfield", short:"Garfield", mnemonic:"Garfield the cat eating twenty lasagnas!", emoji:"🐱" },
   { n:21, name:"Chester A. Arthur", short:"Arthur", mnemonic:"CHEESE-ter King Arthur signing 21 books as an AUTHOR.", emoji:"🧀" },
   { n:22, name:"Grover Cleveland", short:"Cleveland", mnemonic:"A giant CLEAVER cutting corn.", emoji:"🌽" },
-  { n:23, name:"Benjamin Harrison", short:"B. Harrison", mnemonic:"Another hairy monkey (Harrison) swinging!", emoji:"🦧" },
+  { n:23, name:"Benjamin Harrison", short:"B. Harrison", mnemonic:"A HAIRY monkey counting 23 Benjamin $100 bills!", emoji:"🦧" },
   { n:24, name:"Grover Cleveland", short:"Cleveland 2", mnemonic:"The same cleaver comes back for round two!", emoji:"🌽" },
   { n:25, name:"William McKinley", short:"McKinley", mnemonic:"Ronald McDonald with a crown giving 25 burgers.", emoji:"🍔" },
   { n:26, name:"Theodore Roosevelt", short:"T. Roosevelt", mnemonic:"Teddy on a horse wearing a belt of ROSES.", emoji:"🌹" },
