@@ -6,6 +6,9 @@ var testRec = null;
 var testSpeechPass = 0;
 var testTotal = 0;
 var testStep = 0;
+var testMode = "exam"; // practice | exam
+var testSpeakOn = localStorage.getItem("hop-speak-on") === "1";
+var testRestarting = false;
 
 var NAME_NICKS = {
   washington: ["george","gw"],
@@ -122,7 +125,7 @@ function hintFor(p, n){
   if (n===1) {
     if (p.n<=5) return "He is one of the very first doors in the Hall.";
     if (p.n>=16 && p.n<=19) return "This door sits in the Civil War wing.";
-    if (p.n>=26 && p.n<=32) return "Think early 1900s \u2014 roses, taffy, a cooler.";
+    if (p.n>=26 && p.n<=32) return "Think early 1900s — roses, taffy, a cooler.";
     if (p.n>=35 && p.n<=40) return "This door is in the modern hallway, after the two Roosevelts.";
     if (prev) return "He comes right after #"+prev.n+". Picture that door, then the next one.";
     return "Picture the silly scene that lives on this door.";
@@ -131,58 +134,129 @@ function hintFor(p, n){
     if (prev && next) return "He stands between #"+prev.n+" and #"+next.n+".";
     return "The last name has "+last.replace(/ /g,"").length+" letters.";
   }
-  return "The last name starts with \u201c"+last.charAt(0).toUpperCase()+"\u201d and has "+last.replace(/ /g,"").length+" letters.";
+  return "The last name starts with “"+last.charAt(0).toUpperCase()+"” and has "+last.replace(/ /g,"").length+" letters.";
 }
-function startTest(){
-  var intro = PRESIDENTS.filter(function(p){ return getActiveProgress()[p.n].introduced; });
-  if (intro.length < 3) {
-    toast("Place at least 3 portraits first.", "warm");
-    if (typeof startLearn==="function") startLearn();
-    return;
-  }
-  intro.sort(function(a,b){ return a.n - b.n; });
-  testQueue = intro.slice();
+function hasVoice(){
+  return ("SpeechRecognition" in window) || ("webkitSpeechRecognition" in window);
+}
+function startTest(){ showTestMenu(); }
+function showTestMenu(){
+  stopListen(true);
+  var box = document.getElementById("test-card");
+  var h = document.querySelector("#screen-test h1");
+  var s = document.querySelector("#screen-test .subtitle");
+  if (h) h.textContent = "Test";
+  if (s) s.textContent = "Practice with choices, or take the real test.";
+  box.innerHTML =
+    '<p class="walk-prompt">How do you want to go?</p>' +
+    '<div class="btn-row" style="flex-direction:column;align-items:stretch;gap:10px">' +
+    '<button type="button" class="btn primary" onclick="startPracticeTest()">Practice test · #1–#47</button>' +
+    '<p class="hint" style="margin:0">Multiple choice, in order. The photo opens after a correct answer.</p>' +
+    '<button type="button" class="btn" onclick="startExamTest()">Actual test · number only</button>' +
+    '<p class="hint" style="margin:0">Type or speak the name. No photo on the question.</p>' +
+    '<button type="button" class="btn secondary" onclick="leaveTest()">Hall</button>' +
+    '</div>';
+  showScreen("screen-test");
+}
+function beginQueue(mode){
+  testMode = mode;
+  testQueue = PRESIDENTS.slice();
   testTotal = testQueue.length;
   testStep = 0;
   testHints = 0;
   nextTest();
 }
+function startPracticeTest(){ beginQueue("practice"); }
+function startExamTest(){ beginQueue("exam"); }
 function nextTest(){
   if (!testQueue.length) {
-    toast("You named them in order. Back to the Hall.", "success");
+    toast(testMode==="practice" ? "Practice walk finished." : "You named them in order. Back to the Hall.", "success");
     if (typeof showHome==="function") showHome();
     return;
   }
   testP = testQueue.shift();
   testStep += 1;
   testHints = 0;
-  renderTestAsk();
+  if (testMode === "practice") renderPracticeAsk();
+  else renderExamAsk();
 }
-function renderTestAsk(){
+function renderPracticeAsk(){
   var p = testP;
-  var box = document.getElementById("test-card");
-  var voice = ("SpeechRecognition" in window) || ("webkitSpeechRecognition" in window);
-  box.innerHTML =
-    '<div class="door" id="test-door"><div class="door-num">#'+p.n+'</div>' +
-    '<div class="door-face" style="min-height:88px;color:#ffe6a6;font-weight:800;display:flex;align-items:center;justify-content:center;">Who lives here?</div>' +
-    '<div class="door-knob"></div></div>' +
-    '<p class="walk-prompt">Door '+testStep+' of '+testTotal+' \u2014 in order</p>' +
-    '<input id="test-guess" type="text" autocomplete="off" autocapitalize="words" enterkeyhint="done" placeholder="Last name is enough" ' +
+  var h = document.querySelector("#screen-test h1");
+  var s = document.querySelector("#screen-test .subtitle");
+  if (h) h.textContent = "Practice test";
+  if (s) s.textContent = "#"+p.n+" · door "+testStep+" of "+testTotal;
+  document.getElementById("test-card").innerHTML =
+    '<div class="big-num">#'+p.n+'</div>' +
+    '<p class="walk-prompt">Which president is number '+p.n+'?</p>' +
+    '<div class="options" id="test-opts"></div>' +
+    '<div class="btn-row" style="margin-top:12px"><button type="button" class="btn secondary" onclick="leaveTest()">Hall</button></div>';
+  generateOptions(p).forEach(function(opt){
+    var b = document.createElement("div");
+    b.className = "opt"; b.textContent = opt.label;
+    b.onclick = function(){ answerPractice(opt.correct, b, p); };
+    document.getElementById("test-opts").appendChild(b);
+  });
+  showScreen("screen-test");
+}
+function answerPractice(ok, btn, p){
+  document.querySelectorAll("#test-opts .opt").forEach(function(o){ o.style.pointerEvents="none"; });
+  if (ok) {
+    btn.classList.add("correct");
+    if (typeof bumpGood==="function") bumpGood(p);
+    toast("#"+p.n+" "+p.short+" — yes", "success");
+    setTimeout(function(){ renderTestCard(p); }, 500);
+  } else {
+    btn.classList.add("wrong");
+    document.querySelectorAll("#test-opts .opt").forEach(function(o){
+      if (o.textContent === p.name) o.classList.add("correct");
+    });
+    if (typeof bumpMiss==="function") bumpMiss(p);
+    toast("Almost… picture the memory image for #"+p.n, "warm");
+    setTimeout(function(){ renderTestCard(p); }, 900);
+  }
+}
+function renderExamAsk(){
+  var p = testP;
+  var h = document.querySelector("#screen-test h1");
+  var s = document.querySelector("#screen-test .subtitle");
+  if (h) h.textContent = "Test";
+  if (s) s.textContent = "Number only · door "+testStep+" of "+testTotal;
+  var voice = hasVoice();
+  document.getElementById("test-card").innerHTML =
+    '<div class="big-num" style="font-size:4.2rem">#'+p.n+'</div>' +
+    '<p class="walk-prompt">Who is number '+p.n+'?</p>' +
+    '<input id="test-guess" type="text" autocomplete="off" autocapitalize="words" enterkeyhint="done" placeholder="Type the name" ' +
     'style="width:100%;padding:12px;border-radius:12px;border:2px solid var(--wood);font-size:1.1rem;">' +
     '<p id="test-hint" class="hint" style="min-height:1.4em;margin-top:8px;"></p>' +
-    '<div class="btn-row" style="margin-top:12px;">' +
+    '<div class="btn-row" style="margin-top:12px;flex-wrap:wrap">' +
     '<button type="button" class="btn primary" onclick="submitTest()">Check</button>' +
-    (voice ? '<button type="button" class="btn" id="test-mic" onclick="listenTest()">\ud83c\udfa4 Speak</button>' : '') +
+    (voice ? '<button type="button" class="btn" id="test-mic" onclick="toggleTestSpeak()">'+speakLabel()+'</button>' : '') +
     '<button type="button" class="btn secondary" onclick="leaveTest()">Hall</button>' +
     '</div>';
   showScreen("screen-test");
-  var nav = document.getElementById("main-nav");
-  if (nav) nav.style.display = "flex";
   setTimeout(function(){
     var el = document.getElementById("test-guess");
     if (!el) return;
     el.addEventListener("keydown", function(e){ if (e.key==="Enter"){ e.preventDefault(); submitTest(); } });
-  }, 50);
+    if (testSpeakOn) listenTest(true);
+  }, 80);
+}
+function speakLabel(){
+  return testSpeakOn ? "🎙️ Speak on" : "🎙️ Speak off";
+}
+function paintMic(){
+  var mic = document.getElementById("test-mic");
+  if (!mic) return;
+  if (testListening) mic.textContent = "Listening…";
+  else mic.textContent = speakLabel();
+}
+function toggleTestSpeak(){
+  testSpeakOn = !testSpeakOn;
+  localStorage.setItem("hop-speak-on", testSpeakOn ? "1" : "0");
+  if (testSpeakOn) listenTest(true);
+  else stopListen(true);
+  paintMic();
 }
 function renderTestCard(p){
   var pic = (typeof imgTag==="function")
@@ -197,16 +271,14 @@ function renderTestCard(p){
     '<div class="btn-row" style="margin-top:12px;"><button type="button" class="btn primary" onclick="nextTest()">Next door</button></div>';
 }
 function submitTest(){
-  if (!testP) return;
+  if (!testP || testMode !== "exam") return;
   var input = document.getElementById("test-guess");
   var guess = (input && input.value) || "";
-  if (!foldName(guess)) { toast("Type a name, or tap Speak", "warm"); return; }
+  if (!foldName(guess)) { toast("Type a name, or turn Speak on", "warm"); return; }
   if (nameMatches(guess, testP)) {
     if (typeof bumpGood==="function") bumpGood(testP);
-    toast("#"+testP.n+" "+testP.short+" \u2014 yes", "success");
-    var door = document.getElementById("test-door");
-    if (door) door.classList.add("open");
-    renderTestCard(testP);
+    toast("#"+testP.n+" "+testP.short+" — yes", "success");
+    nextTest();
     return;
   }
   testHints += 1;
@@ -214,22 +286,30 @@ function submitTest(){
   var hintEl = document.getElementById("test-hint");
   if (testHints <= 3) {
     if (hintEl) hintEl.textContent = "Hint "+testHints+" of 3: "+hintFor(testP, testHints);
-    toast("Not yet. Another look at the door.", "warm");
+    toast("Not yet. Stay with the number.", "warm");
   } else {
     if (hintEl) hintEl.textContent = "Three hints used. Picture the scene, then try the last name again.";
     toast("Keep the picture. Last name is enough.", "warm");
   }
+  if (testSpeakOn) setTimeout(function(){ listenTest(true); }, 400);
 }
-function listenTest(){
+function stopListen(keepPref){
+  testRestarting = true;
+  try { if (testRec) testRec.abort(); } catch(e){}
+  testListening = false;
+  testRestarting = false;
+  if (!keepPref) {}
+  paintMic();
+}
+function listenTest(auto){
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) { toast("This browser cannot hear yet. Type the name.", "warm"); return; }
+  if (!auto) testSpeakOn = true;
+  localStorage.setItem("hop-speak-on", testSpeakOn ? "1" : "0");
   var input = document.getElementById("test-guess");
   if (input) input.blur();
   if (testListening && testRec) {
-    try { testRec.stop(); } catch(e){}
-    testListening = false;
-    var mic0 = document.getElementById("test-mic");
-    if (mic0) mic0.textContent = "\ud83c\udfa4 Speak";
+    if (!auto) { testSpeakOn = false; localStorage.setItem("hop-speak-on","0"); stopListen(true); }
     return;
   }
   try { if (testRec) testRec.abort(); } catch(e){}
@@ -242,9 +322,8 @@ function listenTest(){
   var heard = "";
   testListening = true;
   testSpeechPass += 1;
-  var mic = document.getElementById("test-mic");
-  if (mic) mic.textContent = "Listening\u2026";
-  toast("Listening \u2014 say the last name", "warm");
+  paintMic();
+  if (!auto) toast("Listening — say the last name", "warm");
   testRec.onresult = function(ev){
     heard = "";
     for (var i = ev.resultIndex; i < ev.results.length; i++) {
@@ -256,45 +335,44 @@ function listenTest(){
     if (gotFinal && foldName(heard)) {
       try { testRec.stop(); } catch(e){}
       testListening = false;
-      if (mic) mic.textContent = "\ud83c\udfa4 Speak";
       submitTest();
     }
   };
   testRec.onerror = function(ev){
     testListening = false;
-    if (mic) mic.textContent = "\ud83c\udfa4 Speak";
+    paintMic();
     var err = (ev && ev.error) || "";
     if (err === "not-allowed" || err === "service-not-allowed") {
-      toast("Allow the microphone, then tap Speak again.", "warm");
-    } else if (err === "no-speech") {
-      toast("Did not catch that. Tap Speak and try once more.", "warm");
-    } else if (err !== "aborted") {
-      toast("Could not hear that. Type the last name.", "warm");
+      testSpeakOn = false;
+      localStorage.setItem("hop-speak-on","0");
+      toast("Allow the microphone, then turn Speak on.", "warm");
+    } else if (err === "no-speech" && testSpeakOn) {
+      setTimeout(function(){ if (testSpeakOn && document.getElementById("test-guess")) listenTest(true); }, 250);
     }
   };
   testRec.onend = function(){
-    var wasListening = testListening;
     testListening = false;
-    if (mic) mic.textContent = "\ud83c\udfa4 Speak";
-    if (!gotFinal) {
-      if (foldName(heard) || (input && foldName(input.value))) {
-        submitTest();
-      } else if (wasListening && testSpeechPass <= 2) {
-        toast("Mic is on. Tap Speak once more, then say the name.", "warm");
-      }
+    paintMic();
+    if (gotFinal) return;
+    if (foldName(heard) || (input && foldName(input.value))) {
+      submitTest();
+      return;
+    }
+    if (testSpeakOn && document.getElementById("test-guess") && testMode==="exam") {
+      setTimeout(function(){ if (testSpeakOn && document.getElementById("test-guess")) listenTest(true); }, 280);
     }
   };
   try {
     testRec.start();
   } catch (e) {
     testListening = false;
-    if (mic) mic.textContent = "\ud83c\udfa4 Speak";
-    toast("Mic did not start. Type the last name.", "warm");
+    paintMic();
+    if (testSpeakOn) setTimeout(function(){ if (testSpeakOn) listenTest(true); }, 400);
   }
 }
 function leaveTest(){
-  if (testRec) try { testRec.abort(); } catch(e){}
-  testListening = false;
+  testSpeakOn = testSpeakOn;
+  stopListen(true);
   testP = null; testQueue = [];
   if (typeof leaveWalk==="function") leaveWalk();
   else if (typeof showHome==="function") showHome();
