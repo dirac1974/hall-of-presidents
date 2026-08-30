@@ -6,6 +6,12 @@ var ERAS = [
   { id:"world", name:"World", ico:"🌍", a:33, b:40 },
   { id:"now", name:"Now", ico:"🚀", a:41, b:47 }
 ];
+var ZONES = [
+  { id:"early", name:"Early", label:"1–12", a:1, b:12 },
+  { id:"union", name:"Union", label:"13–24", a:13, b:24 },
+  { id:"century", name:"Century", label:"25–36", a:25, b:36 },
+  { id:"now", name:"Now", label:"37–47", a:37, b:47 }
+];
 var sessionCombo = 0;
 
 function todayKey(){
@@ -104,6 +110,18 @@ function renderPlayHud(){
         toast(open ? (e.ico+" "+e.name+" wing is open!") : ("Place presidents #"+e.a+"–#"+e.b+" to open "+e.name), open?"success":"warm");
       };
       row.appendChild(d);
+    });
+  }
+  var zones = document.getElementById("zone-row");
+  if (zones){
+    zones.innerHTML = "";
+    ZONES.forEach(function(z){
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "btn secondary zone-btn";
+      b.textContent = z.name+" · #"+z.label;
+      b.onclick = function(){ startZoneWalk(z); };
+      zones.appendChild(b);
     });
   }
 }
