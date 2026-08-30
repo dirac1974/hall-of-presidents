@@ -1,3 +1,4 @@
+const IMG_VER = "8303";
 const IMG_IDS = {
   1:"1TD9UsI14L1fsPHnnCsqG9HHdrLD1IfDH",
   2:"1mea_p_THjTZrBn2qRFUuWs15U-Kw8a7P",
@@ -65,19 +66,19 @@ function localCardSrc(n){
   return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
 }
 function presImg(n, w){
-  if (IMG_LOCAL[n]) return IMG_LOCAL[n];
+  if (IMG_LOCAL[n]) return IMG_LOCAL[n] + "?v=" + IMG_VER;
   var id = IMG_IDS[n];
   if (!id) return localCardSrc(n);
   var sz = w || 600;
-  if (n >= 29) return "https://drive.google.com/thumbnail?id=" + id + "&sz=w" + sz;
-  return "https://lh3.googleusercontent.com/d/" + id + "=s" + sz;
+  if (n >= 29) return "https://drive.google.com/thumbnail?id=" + id + "&sz=w" + sz + "&v=" + IMG_VER;
+  return "https://lh3.googleusercontent.com/d/" + id + "=s" + sz + "#v" + IMG_VER;
 }
 function presImgAlt(n, w){
   var id = IMG_IDS[n];
   if (!id) return localCardSrc(n);
   var sz = w || 600;
   if (n >= 29) return "https://lh3.googleusercontent.com/d/" + id + "=s" + sz;
-  return "https://drive.google.com/thumbnail?id=" + id + "&sz=w" + sz;
+  return "https://drive.google.com/thumbnail?id=" + id + "&sz=w" + sz + "&v=" + IMG_VER;
 }
 function imgFail(el){
   var n = Number(el.dataset.n||0);
