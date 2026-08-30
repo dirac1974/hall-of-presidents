@@ -29,7 +29,7 @@ const PRESIDENTS = [
   { n:28, name:"Woodrow Wilson", short:"Wilson", mnemonic:"WOODROW’s will floating out like a ghost — door 28.", emoji:"📜" },
   { n:29, name:"Warren G. Harding", short:"Harding", mnemonic:"WARREN the HARD metal man — door 29.", emoji:"🤖" },
   { n:30, name:"Calvin Coolidge", short:"Coolidge", mnemonic:"CALVIN standing in a COOLER — door 30.", emoji:"🧊" },
-  { n:31, name:"Herbert Hoover", short:"Hoover", mnemonic:"HERBERT’s vacuum HOOVERing — door 31.", emoji:"🧹" },
+  { n:31, name:"Herbert Hoover", short:"Hoover", mnemonic:"HERBERT’s Hoover vacuuming 31 objects.", emoji:"🧹" },
   { n:32, name:"Franklin D. Roosevelt", short:"FDR", mnemonic:"FRANKLIN’s ROOSTER with roses — door 32.", emoji:"🐓" },
   { n:33, name:"Harry S. Truman", short:"Truman", mnemonic:"HARRY the TRUE man with a star — door 33.", emoji:"⭐" },
   { n:34, name:"Dwight D. Eisenhower", short:"Eisenhower", mnemonic:"DWIGHT’s EYEball watching — door 34.", emoji:"👁️" },
