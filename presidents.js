@@ -24,7 +24,7 @@ const PRESIDENTS = [
   { n:23, name:"Benjamin Harrison", short:"B. Harrison", mnemonic:"A HAIRY monkey counting 23 Benjamin $100 bills!", emoji:"🦧" },
   { n:24, name:"Grover Cleveland", short:"Cleveland 2", mnemonic:"The same cleaver comes back for round two!", emoji:"🌽" },
   { n:25, name:"William McKinley", short:"McKinley", mnemonic:"McDonald the KING at the KINLEY gate with 25 burgers.", emoji:"🍔" },
-  { n:26, name:"Theodore Roosevelt", short:"T. Roosevelt", mnemonic:"Teddy on a horse wearing a belt of ROSES.", emoji:"🌹" },
+  { n:26, name:"Theodore Roosevelt", short:"T. Roosevelt", mnemonic:"Teddy on a horse wearing a belt of 26 ROSES.", emoji:"🌹" },
   { n:27, name:"William Howard Taft", short:"Taft", mnemonic:"Stuck in sticky TAFFY!", emoji:"🍬" },
   { n:28, name:"Woodrow Wilson", short:"Wilson", mnemonic:"A will (document) coming out of a coffin like a zombie.", emoji:"📜" },
   { n:29, name:"Warren G. Harding", short:"Harding", mnemonic:"A giant metal HARD man standing in the street.", emoji:"🤖" },
