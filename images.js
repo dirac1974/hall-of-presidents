@@ -1,4 +1,4 @@
-const IMG_VER = "8311";
+const IMG_VER = "8312";
 const IMG_IDS = {
   1:"1CV9HkoC4lMIihbPiygQMGMATvAOEeeGX",
   2:"1qa74L1N69Mv-Bpe05pKAPUpMHQ1KkIvo",
@@ -48,7 +48,7 @@ const IMG_IDS = {
   46:"1koEKdQpl8nl_vW666VdHrrAdOk9Ep2hV",
   47:"1UB503X611LNQDrKbmzbY1qV_6rMIa0SO"
 };
-const IMG_LOCAL = { 29: "images/pres-29.svg" };
+const IMG_LOCAL = {};
 
 function pad2(n){ return (n<10?"0":"")+n; }
 function personOf(n){
