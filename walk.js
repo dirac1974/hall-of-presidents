@@ -1,4 +1,4 @@
-var walkRoom = 1, walkRun = 0;
+var walkRoom = 1, walkRun = 0, walkUntil = 47;
 var lineTarget = [], linePicked = [];
 var walkTimer = null;
 
@@ -12,7 +12,7 @@ if (typeof showScreen === "function") {
   showScreen = function(id){
     _show(id);
     var nav = document.getElementById("main-nav");
-    if (nav && (id==="screen-walk" || id==="screen-line" || id==="screen-howto" || id==="screen-home")) {
+    if (nav && (id==="screen-walk" || id==="screen-line" || id==="screen-howto" || id==="screen-home" || id==="screen-test")) {
       nav.style.display = "flex";
     }
   };
@@ -48,18 +48,33 @@ function firstUnlit(){
 function startWalk(){
   var any = PRESIDENTS.some(function(p){ return getActiveProgress()[p.n].introduced; });
   if (!any) { startLearn(); return; }
+  startWalkFrom(firstUnlit().n, 47);
+}
+function startZoneWalk(zone){
+  if (!zone) return startWalk();
+  toast("Training "+zone.name+" · #"+zone.a+"–#"+zone.b, "success");
+  startWalkFrom(zone.a, zone.b);
+}
+function startWalkFrom(fromN, untilN){
   if (walkTimer) { clearTimeout(walkTimer); walkTimer = null; }
-  walkRoom = firstUnlit().n;
+  walkRoom = Math.max(1, fromN || 1);
+  walkUntil = untilN || 47;
   walkRun = 0;
   renderWalk();
 }
 function renderWalk(){
+  if (walkRoom > walkUntil) {
+    toast("That zone is done. Back to the Hall.", "success");
+    if (typeof burst==="function") burst();
+    showHome();
+    return;
+  }
   var p = PRESIDENTS[walkRoom-1];
   if (!p) { toast("You walked the whole palace!", "success"); if (typeof burst==="function") burst(); showHome(); return; }
-  if (!getActiveProgress()[p.n].introduced) {
-    toast("A new door. Place this portrait first.", "warm");
-    showLearnCard(p);
-    return;
+  var st = getActiveProgress()[p.n];
+  if (!st.introduced) {
+    st.introduced = true;
+    saveStore();
   }
   document.getElementById("walk-title").textContent = "Room #"+p.n;
   var pic = imgTag(p.n, 500, "width:100%;height:150px;object-fit:cover;display:block;");
@@ -86,8 +101,8 @@ function answerWalk(ok, btn, p){
     toast("#"+p.n+" "+p.short+" — the path continues", "success");
     walkTimer = setTimeout(function(){
       walkTimer = null;
-      if (walkRun >= 6) { toast("Great walk! Back to the Hall.", "success"); showHome(); }
-      else { walkRoom += 1; renderWalk(); }
+      walkRoom += 1;
+      renderWalk();
     }, 1050);
   } else {
     btn.classList.add("wrong");
