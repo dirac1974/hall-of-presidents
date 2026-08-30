@@ -15,7 +15,7 @@ const IMG_IDS = {
   14:"1sKVUSE-C_zv3GQ1lLG67Z8ZpoDgDIw01",
   15:"1dsJYTLyIGOBt8e4QZ3--dJW3tzXSIhDI",
   16:"1YXdMfhh2XfUrgU9heHbwbTxOhiRm7YeE",
-  17:"1KiKxwFRJ2mKZ9yhsu-N0kPd4_mgU7JUA",
+  17:"1SK3CIbL-9UUPLyqY3--hWZux1RhNowZz",
   18:"1kmpMzkFazKrksIA61_uVknlL-fuuewWQ",
   19:"1mQZ6O6Lhd8amNgkrk3Gmmcc4rDpG2Wk4",
   20:"1yzpPZgy_ma0CDRtDdrI3iiihCzguwaie",
@@ -69,7 +69,6 @@ function presImg(n, w){
   var id = IMG_IDS[n];
   if (!id) return localCardSrc(n);
   var sz = w || 600;
-  // Later doors: thumbnail URL first (iOS often drops the big lh3 batch after ~28)
   if (n >= 29) return "https://drive.google.com/thumbnail?id=" + id + "&sz=w" + sz;
   return "https://lh3.googleusercontent.com/d/" + id + "=s" + sz;
 }
