@@ -15,7 +15,7 @@ const PRESIDENTS = [
   { n:14, name:"Franklin Pierce", short:"Pierce", mnemonic:"A spear PIERCING through the number 14.", emoji:"🗡️" },
   { n:15, name:"James Buchanan", short:"Buchanan", mnemonic:"Firing fifteen cannons that say BOO!", emoji:"💣" },
   { n:16, name:"Abraham Lincoln", short:"Lincoln", mnemonic:"Lincoln in a tall top hat giving a speech with 16 stars.", emoji:"🎩" },
-  { n:17, name:"Andrew Johnson", short:"A. Johnson", mnemonic:"A giant sewing needle (Johnson) stitching a bed.", emoji:"🪡" },
+  { n:17, name:"Andrew Johnson", short:"A. Johnson", mnemonic:"John’s son stitching a bed piled with 17 pillows.", emoji:"🪡" },
   { n:18, name:"Ulysses S. Grant", short:"Grant", mnemonic:"A friendly genie GRANTing wishes.", emoji:"🧞" },
   { n:19, name:"Rutherford B. Hayes", short:"Hayes", mnemonic:"Saying HEY! while giving a high-five in a hay field.", emoji:"🙌" },
   { n:20, name:"James A. Garfield", short:"Garfield", mnemonic:"Garfield the cat eating twenty lasagnas!", emoji:"🐱" },
