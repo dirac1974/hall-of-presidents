@@ -12,3 +12,11 @@
 .burst{position:fixed;inset:0;pointer-events:none;z-index:80;overflow:hidden;}
 .spark{position:absolute;font-size:1.2rem;animation:pop 900ms ease-out forwards;}
 @keyframes pop{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(.4);opacity:0}}
+
+.streak-row{margin:0 0 12px;padding:8px 10px;background:#fffdf4;border:2px solid #f0c14e;border-radius:14px;text-align:center;}
+.streak-stars{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;min-height:1.4em;}
+.streak-star{font-size:1.15rem;line-height:1;animation:starIn .28s ease-out;}
+.streak-star.boost{font-size:1.55rem;filter:drop-shadow(0 0 6px #ffd700aa);}
+.streak-empty{font-size:.78rem;color:#8b7355;}
+.streak-meta{margin-top:4px;font-size:.78rem;font-weight:700;color:#8b5e3c;}
+@keyframes starIn{0%{transform:scale(.4);opacity:.2}100%{transform:scale(1);opacity:1}}
