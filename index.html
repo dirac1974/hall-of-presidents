@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#f5e6c8" />
   <title>Hall of Presidents — Memory Palace</title>
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="play.css" />
+  <link rel="stylesheet" href="play.css?v=8314" />
   <link rel="stylesheet" href="parade.css" />
   <link rel="stylesheet" href="walk.css" />
   <style>
@@ -20,8 +20,8 @@
     .history-peek,.history-box{margin-top:14px;text-align:left;background:#f7f0e2;border:1px solid #e0d0b0;border-radius:12px;padding:10px 12px}
     .history-peek summary{cursor:pointer;font-weight:700;color:#6b4a2e;font-size:.9rem;list-style:none}
     .history-peek summary::-webkit-details-marker{display:none}
-    .history-peek summary::before{content:"▸ ";}
-    .history-peek[open] summary::before{content:"▾ ";}
+    .history-peek summary::before{content:"\u25b8 ";}
+    .history-peek[open] summary::before{content:"\u25be ";}
     .history-kicker{font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#8b5e3c;margin-bottom:4px}
     .history-peek p,.history-box p{margin:6px 0 0;font-size:.92rem;line-height:1.4;color:#3d2b1a}
     .zone-label{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8b5e3c;text-align:center;margin:10px 0 6px}
@@ -251,7 +251,8 @@
   <script src="play.js"></script>
   <script src="parade.js"></script>
   <script src="walk.js"></script>
-  <script src="test.js"></script>
+  <script src="test.js?v=8314"></script>
+  <script src="practice-streak.js?v=8314"></script>
   <script src="sync.js"></script>
   <script src="family.js"></script>
   <script src="guide.js"></script>
