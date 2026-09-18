@@ -13,14 +13,9 @@ function ensureFamily(){
 }
 function upsertFamilyRow(){
   if (!store.familyCode) return;
-  fetch(SB_URL+"/rest/v1/hop_families", {
-    method: "POST",
-    headers: sbHeaders({ Prefer: "resolution=merge-duplicates,return=minimal" }),
-    body: JSON.stringify({
-      family_code: store.familyCode,
-      parent_email: store.parentEmail || null,
-      updated_at: new Date().toISOString()
-    })
+  sbRpc("yomple_family_upsert", {
+    p_code: store.familyCode,
+    p_email: store.parentEmail || null
   }).catch(function(){});
 }
 function paintFamilyPanel(){
@@ -80,13 +75,13 @@ function verifyEmailOtp(){
     body: JSON.stringify({ type: "email", email: em, token: token })
   }).then(function(r){ return r.json(); }).then(function(auth){
     if (!auth || auth.error || (!auth.access_token && !auth.token)) throw new Error("bad otp");
-    return fetch(SB_URL+"/rest/v1/hop_families?parent_email=eq."+encodeURIComponent(em), { headers: sbHeaders() }).then(function(r){ return r.json(); });
-  }).then(function(rows){
-    if (!rows || !rows.length) {
+    return sbRpc("yomple_family_by_email", {}, auth.access_token || auth.token);
+  }).then(function(code){
+    if (!code) {
       toast("That email is not linked to a household yet. Open Parent / Progress on the old device and save the email.", "warm");
       return;
     }
-    restoreFamily(rows[0].family_code);
+    restoreFamily(code);
   }).catch(function(){
     toast("That code did not match. Try again, or use the family code from your self-email.", "warm");
   });
@@ -95,8 +90,7 @@ function restoreFamily(code){
   code = String(code || (document.getElementById("restore-code") && document.getElementById("restore-code").value) || "").trim().toUpperCase();
   if (!code || code.indexOf("-") < 0) { toast("Type the family code (like MAPLE-K7Q2)", "warm"); return; }
   toast("Finding this household\u2026");
-  fetch(SB_URL+"/rest/v1/hop_players?family_code=eq."+encodeURIComponent(code), { headers: sbHeaders() })
-    .then(function(r){ return r.json(); })
+  sbRpc("yomple_family_players", { p_code: code, p_table: "hop_players" })
     .then(function(rows){
       store.familyCode = code;
       if (!rows || !rows.length) {
@@ -106,14 +100,23 @@ function restoreFamily(code){
         location.href = "https://yomple.com/?request=1";
         return;
       }
+      var chain = Promise.resolve();
       rows.forEach(function(row, i){
-        applyCloudRow(row);
-        if (i === 0) store.activeId = "u-"+row.username;
+        chain = chain.then(function(){
+          // a PIN-protected player needs its PIN once per device, so this
+          // device can keep saving that player's progress
+          return yompleClaim("hop_players", row).then(function(full){
+            applyCloudRow(full || row);
+            if (i === 0) store.activeId = "u-"+row.username;
+          });
+        });
       });
-      store.familyCode = code;
-      saveStore();
-      toast("Household restored \u2014 "+rows.length+" player"+(rows.length===1?"":"s"), "success");
-      setTimeout(showProfiles, 500);
+      return chain.then(function(){
+        store.familyCode = code;
+        saveStore();
+        toast("Household restored \u2014 "+rows.length+" player"+(rows.length===1?"":"s"), "success");
+        setTimeout(showProfiles, 500);
+      });
     })
     .catch(function(){ toast("Could not reach the cloud just now", "warm"); });
 }
