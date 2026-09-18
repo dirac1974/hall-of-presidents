@@ -15,10 +15,30 @@ function sbHeaders(extra){
   if (extra) Object.keys(extra).forEach(function(k){ h[k] = extra[k]; });
   return h;
 }
+function sbRpc(fn, args, token){
+  return fetch(SB_URL+"/rest/v1/rpc/"+fn, {
+    method: "POST",
+    headers: {
+      apikey: SB_KEY,
+      Authorization: "Bearer "+(token || SB_KEY),
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(args || {})
+  }).then(function(r){ return r.ok ? r.json() : null; });
+}
 function cloudGet(username){
-  return fetch(SB_URL+"/rest/v1/hop_players?username=eq."+encodeURIComponent(username), { headers: sbHeaders() })
-    .then(function(r){ return r.json(); })
-    .then(function(rows){ return (rows && rows[0]) || null; })
+  return sbRpc("yomple_player_find", { p_table: "hop_players", p_username: username })
+    .catch(function(){ return null; });
+}
+/* Rows come back without a PIN. When one is set the PIN must be typed, and the
+   server compares it; the typed PIN is then cached locally as before. */
+function yompleClaim(table, row){
+  if (!row) return Promise.resolve(null);
+  if (!row.has_pin) return Promise.resolve(row);
+  var typed = window.prompt("Enter the family PIN for "+(row.display_name || row.username));
+  if (!typed) return Promise.resolve(null);
+  return sbRpc("yomple_player_claim", { p_table: table, p_username: row.username, p_pin: typed })
+    .then(function(full){ if (full) full.pin = typed; return full; })
     .catch(function(){ return null; });
 }
 function payloadForActive(){
@@ -38,10 +58,17 @@ function payloadForActive(){
 function cloudSaveActive(){
   var body = payloadForActive();
   if (!body) return;
-  fetch(SB_URL+"/rest/v1/hop_players", {
-    method: "POST",
-    headers: sbHeaders({ Prefer: "resolution=merge-duplicates,return=minimal" }),
-    body: JSON.stringify(body)
+  sbRpc("yomple_player_upsert", {
+    p_table: "hop_players",
+    p_username: body.username,
+    p_pin: body.pin || null,
+    p_row: {
+      display_name: body.display_name,
+      avatar: body.avatar,
+      family_code: body.family_code || null,
+      progress: body.progress,
+      fun: body.fun
+    }
   }).catch(function(){});
 }
 function scheduleCloudSave(){
@@ -62,7 +89,7 @@ function applyCloudRow(row){
     existing.name = row.display_name;
     existing.avatar = row.avatar;
     existing.username = row.username;
-    existing.pin = row.pin || "";
+    existing.pin = row.pin || existing.pin || "";
     id = existing.id;
   } else {
     store.profiles.push({ id:id, name:row.display_name, avatar:row.avatar, username:row.username, pin:row.pin||"", created: Date.now() });
@@ -103,12 +130,11 @@ function findHall(){
   toast("Looking for "+username+"…");
   cloudGet(username).then(function(row){
     if (!row) { toast("No Hall found for that name", "warm"); return; }
-    if (row.pin) {
-      var pin = window.prompt("Enter the family PIN for "+row.display_name);
-      if (pin !== row.pin) { toast("PIN did not match", "warm"); return; }
-    }
-    applyCloudRow(row);
-    toast("Welcome back, "+row.display_name+"!", "success");
-    setTimeout(showHome, 500);
+    return yompleClaim("hop_players", row).then(function(full){
+      if (!full) { toast("PIN did not match", "warm"); return; }
+      applyCloudRow(full);
+      toast("Welcome back, "+full.display_name+"!", "success");
+      setTimeout(showHome, 500);
+    });
   });
 }

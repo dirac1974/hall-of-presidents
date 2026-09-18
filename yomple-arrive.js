@@ -1,27 +1,7 @@
 function findAnyYomplePerson(username){
-  if (typeof cloudGetTable !== "function") {
-    var sisters = ["hop_players","bloom_players","garden_players","star_players","field_players"];
-    var chain = Promise.resolve(null);
-    sisters.forEach(function(table){
-      chain = chain.then(function(found){
-        if (found) return found;
-        return fetch(SB_URL+"/rest/v1/"+table+"?username=eq."+encodeURIComponent(username), { headers: sbHeaders() })
-          .then(function(r){ return r.json(); })
-          .then(function(rows){ return (rows && rows[0]) ? { table: table, row: rows[0] } : null; })
-          .catch(function(){ return null; });
-      });
-    });
-    return chain;
-  }
-  var tables = ["hop_players","bloom_players","garden_players","star_players","field_players"];
-  var chain = Promise.resolve(null);
-  tables.forEach(function(table){
-    chain = chain.then(function(found){
-      if (found) return found;
-      return cloudGetTable(table, username).then(function(row){ return row ? { table: table, row: row } : null; });
-    });
-  });
-  return chain;
+  return sbRpc("yomple_player_find_any", { p_username: username, p_prefer: "hop_players" })
+    .then(function(row){ return row ? { table: row.table, row: row } : null; })
+    .catch(function(){ return null; });
 }
 function adoptPerson(row, progress){
   row = row || {};
@@ -87,12 +67,15 @@ function consumeYompleHandoff(){
       if (typeof cloudSaveActive === "function") cloudSaveActive();
       return land();
     }
-    if (hit.table === "hop_players" && typeof applyCloudRow === "function") applyCloudRow(hit.row);
-    else {
-      adoptPerson(hit.row, {});
-      if (typeof cloudSaveActive === "function") cloudSaveActive();
-    }
-    return land();
+    return yompleClaim(hit.table, hit.row).then(function(full){
+      if (!full) return land();
+      if (hit.table === "hop_players" && typeof applyCloudRow === "function") applyCloudRow(full);
+      else {
+        adoptPerson(full, {});
+        if (typeof cloudSaveActive === "function") cloudSaveActive();
+      }
+      return land();
+    });
   }).catch(function(){
     adoptPerson({ username: username, display_name: raw, family_code: store.familyCode || f }, {});
     return land();
