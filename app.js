@@ -99,7 +99,11 @@ function recordMiss(p) {
 loadStore();
 (function bootHall(){
   var yq = new URLSearchParams(location.search);
-  if (yq.get("u") || yq.get("who") || yq.get("from") === "yomple") {
+  // Hold the screen only when there is a name for the handoff to land on. `?from=yomple&f=CODE`
+  // with nobody named — what the hub sends when no face has been tapped yet — used to return here
+  // and render nothing at all, because consumeYompleHandoff bails without a `u` and nothing else
+  // ever called showHome or showProfiles. A blank page is worse than the roster.
+  if (yq.get("u") || yq.get("who")) {
     window.YOMPLE_HANDSHAKE = true;
     return;
   }
