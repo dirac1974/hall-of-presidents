@@ -39,10 +39,18 @@ function hideHubFind(){
 }
 function consumeYompleHandoff(){
   var q = new URLSearchParams(location.search);
-  var raw = (q.get("u") || "").trim();
-  var f = (q.get("f") || "").trim();
+  // The hub sends ?u=&f=; an address this app stamped for itself sends the same pair; ?who= and
+  // ?family= are the spellings the sister apps use. Take all of them, so a household code is never
+  // dropped just because it arrived under the other name.
+  var raw = (q.get("u") || q.get("who") || "").trim();
+  var f = (q.get("f") || q.get("family") || "").trim();
   var fromHub = q.get("from") === "yomple" || !!raw;
-  if (f && f.indexOf("-") > 0) store.familyCode = f.toUpperCase();
+  // Keep the code even when nobody is named: it is the household, not the kid, and the next screen
+  // (Find my Hall, the parent panel) should not have to ask for it again.
+  if (f && f.indexOf("-") > 0) {
+    store.familyCode = f.toUpperCase();
+    localStorage.setItem("presidents-palace-v2", JSON.stringify(store));
+  }
   if (!raw) return Promise.resolve(false);
   var username = slugName(raw);
   window.YOMPLE_HANDSHAKE = true;
@@ -50,6 +58,9 @@ function consumeYompleHandoff(){
   if (fromHub) hideHubFind();
   function land(){
     if (typeof showHome === "function") showHome();
+    // Freeze this sign-in into the address bar: a wiped phone reopening it lands here again rather
+    // than on the roster.
+    if (window.YompleStay) window.YompleStay.arrived(username, store.familyCode);
     return true;
   }
   var local = (store.profiles||[]).find(function(p){
